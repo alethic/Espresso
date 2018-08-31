@@ -24,7 +24,7 @@
     <PackageReference Include="System.Runtime.InteropServices.RuntimeInformation" Version="4.3.0" />
   </ItemGroup>
 
-  <Target Name="GetLibTargets">
+  <Target Name="GetLibTargets" BeforeTargets="GetCopyToOutputDirectoryItems">
     <Message Text="GetLibTargets" Importance="high" />
     <MSBuild Projects="@(LibProjectReference)" Targets="GetTargetPath" Properties="Platform=%(LibProjectReference.Platform);Configuration=%(LibProjectReference.Configuration)">
       <Output TaskParameter="TargetOutputs" ItemName="LibTargets" />
@@ -32,15 +32,19 @@
     <Message Text="GetLibTargets: @(LibTargets)" Importance="high" />
     <ItemGroup>
       <ContentWithTargetPath Include="@(LibTargets)">
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
         <TargetPath>%(OutputDir)\%(Filename)%(Extension)</TargetPath>
+      </ContentWithTargetPath>
+      <ContentWithTargetPath Include="@(LibTargets->'%(Rootdir)%(Directory)%(Filename).pdb')">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        <TargetPath>%(OutputDir)\%(Filename).pdb</TargetPath>
       </ContentWithTargetPath>
     </ItemGroup>
   </Target>
 
-  <Target Name="BuildLib" BeforeTargets="Compile" DependsOnTargets="GetLibTargets">
+  <Target Name="BuildLib" BeforeTargets="Compile" DependsOnTargets="GetLibTargets" Inputs="@(LibProjectReference)" Outputs="%(Identity).tmp">
     <Message Text="BuildLib: %(LibProjectReference.Name)" Importance="high" />
-    <MSBuild Projects="@(LibProjectReference)" Targets="Build" Properties="Platform=%(LibProjectReference.Platform);Configuration=Debug">
+    <MSBuild Projects="@(LibProjectReference)" Targets="Build" Properties="Platform=%(LibProjectReference.Platform);Configuration=%(LibProjectReference.Configuration)">
       <Output TaskParameter="TargetOutputs" ItemName="LibOutputs" />
     </MSBuild>
     <Message Text="BuildLib: @(LibTargets)" Importance="high" />

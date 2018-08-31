@@ -4,9 +4,10 @@
     public static class Program
     {
 
-        public static int Main(string[] args)
+        public static void Main(string[] args)
         {
-            return EspressoLib.Native.main(args.Length, args);
+            Entry.Run();
+            System.Console.ReadLine();
         }
 
     }

@@ -1,7 +1,8 @@
 ﻿using System;
+using System.ComponentModel;
 using System.Runtime.InteropServices;
 
-namespace EspressoLib
+namespace Espresso
 {
 
     /// <summary>
@@ -20,10 +21,12 @@ namespace EspressoLib
                 switch (RuntimeInformation.OSArchitecture)
                 {
                     case Architecture.X86:
-                        LoadLibrary(@"native\win-x86\EspressoLib.dll");
+                        if (LoadLibrary(@"native\win-x86\EspressoLib.dll") == IntPtr.Zero)
+                            throw new Win32Exception(Marshal.GetLastWin32Error());
                         break;
                     case Architecture.X64:
-                        LoadLibrary(@"native\win-x64\EspressoLib.dll");
+                        if (LoadLibrary(@"native\win-x64\EspressoLib.dll") == IntPtr.Zero)
+                            throw new Win32Exception(Marshal.GetLastWin32Error());
                         break;
                     default:
                         throw new NotSupportedException("Unknown OS architecture.");
@@ -35,10 +38,10 @@ namespace EspressoLib
             }
         }
 
-        [DllImport("kernel32.dll")]
+        [DllImport("kernel32.dll", SetLastError = true)]
         static extern IntPtr LoadLibrary(string dllToLoad);
 
-        [DllImport("EspressoLib.dll")]
+        [DllImport("EspressoLib.dll", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
         public static extern int main(int argc, string[] argv);
 
     }

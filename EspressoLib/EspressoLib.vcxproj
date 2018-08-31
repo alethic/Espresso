@@ -134,4 +134,7 @@
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets" />
+  <Target Name="BuildMessage" BeforeTargets="Build">
+    <Message Text="Building $(Configuration)|$(Platform)..." Importance="high" />
+  </Target>
 </Project>

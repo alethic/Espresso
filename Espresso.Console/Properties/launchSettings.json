@@ -1,0 +1,8 @@
+{
+    "profiles": {
+        "Espresso.Console": {
+            "commandName": "Project",
+            "nativeDebugging": true
+        }
+    }
+}
