@@ -15,16 +15,23 @@ namespace EspressoLib
         /// </summary>
         static Native()
         {
-            switch (RuntimeInformation.OSArchitecture)
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
             {
-                case Architecture.X86:
-                    LoadLibrary(@"native\win-x86\EspressoLib.dll");
-                    break;
-                case Architecture.X64:
-                    LoadLibrary(@"native\win-x64\EspressoLib.dll");
-                    break;
-                default:
-                    throw new NotSupportedException("Unknown architecture.");
+                switch (RuntimeInformation.OSArchitecture)
+                {
+                    case Architecture.X86:
+                        LoadLibrary(@"native\win-x86\EspressoLib.dll");
+                        break;
+                    case Architecture.X64:
+                        LoadLibrary(@"native\win-x64\EspressoLib.dll");
+                        break;
+                    default:
+                        throw new NotSupportedException("Unknown OS architecture.");
+                }
+            }
+            else
+            {
+                throw new NotSupportedException("Unknown OS platform.");
             }
         }
 
