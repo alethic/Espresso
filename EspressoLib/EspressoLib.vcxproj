@@ -1,0 +1,155 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|x86">
+      <Configuration>Debug</Configuration>
+      <Platform>x86</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x86">
+      <Configuration>Release</Configuration>
+      <Platform>x86</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="black_white.c" />
+    <ClCompile Include="canonical.c" />
+    <ClCompile Include="cofactor.c" />
+    <ClCompile Include="cols.c" />
+    <ClCompile Include="compl.c" />
+    <ClCompile Include="contain.c" />
+    <ClCompile Include="cpu_time.c" />
+    <ClCompile Include="cubestr.c" />
+    <ClCompile Include="cvrin.c" />
+    <ClCompile Include="cvrm.c" />
+    <ClCompile Include="cvrmisc.c" />
+    <ClCompile Include="cvrout.c" />
+    <ClCompile Include="dominate.c" />
+    <ClCompile Include="equiv.c" />
+    <ClCompile Include="espresso.c" />
+    <ClCompile Include="essen.c" />
+    <ClCompile Include="essentiality.c" />
+    <ClCompile Include="exact.c" />
+    <ClCompile Include="expand.c" />
+    <ClCompile Include="gasp.c" />
+    <ClCompile Include="gimpel.c" />
+    <ClCompile Include="globals.c" />
+    <ClCompile Include="hack.c" />
+    <ClCompile Include="indep.c" />
+    <ClCompile Include="irred.c" />
+    <ClCompile Include="main.c" />
+    <ClCompile Include="map.c" />
+    <ClCompile Include="matrix.c" />
+    <ClCompile Include="mincov.c" />
+    <ClCompile Include="opo.c" />
+    <ClCompile Include="pair.c" />
+    <ClCompile Include="part.c" />
+    <ClCompile Include="primes.c" />
+    <ClCompile Include="prtime.c" />
+    <ClCompile Include="reduce.c" />
+    <ClCompile Include="rows.c" />
+    <ClCompile Include="set.c" />
+    <ClCompile Include="setc.c" />
+    <ClCompile Include="sharp.c" />
+    <ClCompile Include="sigma.c" />
+    <ClCompile Include="signature.c" />
+    <ClCompile Include="signature_exact.c" />
+    <ClCompile Include="sminterf.c" />
+    <ClCompile Include="solution.c" />
+    <ClCompile Include="sparse.c" />
+    <ClCompile Include="strdup.c" />
+    <ClCompile Include="unate.c" />
+    <ClCompile Include="util_signature.c" />
+    <ClCompile Include="verify.c" />
+    <ClCompile Include="win32-getopt.c" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="copyright.h" />
+    <ClInclude Include="espresso.h" />
+    <ClInclude Include="main.h" />
+    <ClInclude Include="mincov.h" />
+    <ClInclude Include="mincov_int.h" />
+    <ClInclude Include="port.h" />
+    <ClInclude Include="signature.h" />
+    <ClInclude Include="sparse.h" />
+    <ClInclude Include="sparse_int.h" />
+    <ClInclude Include="strdup.h" />
+    <ClInclude Include="utility.h" />
+    <ClInclude Include="win32-getopt.h" />
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{efe14e12-fcfe-4b59-846b-943f5432c511}</ProjectGuid>
+    <Keyword>Clang</Keyword>
+    <RootNamespace>Espresso</RootNamespace>
+    <MinimumVisualStudioVersion>14.0</MinimumVisualStudioVersion>
+    <WindowsTargetPlatformVersion>10.0.14393.0</WindowsTargetPlatformVersion>
+    <TargetExt>.exe</TargetExt>
+    <CLanguageStandard>c99</CLanguageStandard>
+    <OutDir>$(ProjectDir)bin\$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>$(ProjectDir)bin\$(Platform)\$(Configuration)\</IntDir>
+    <ProjectName>EspressoLib</ProjectName>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x86'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v141_clang_c2</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x86'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v141_clang_c2</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v141_clang_c2</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v141_clang_c2</PlatformToolset>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings" />
+  <ImportGroup Label="Shared" />
+  <ImportGroup Label="PropertySheets" />
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x86'">
+    <TargetName>Espresso32</TargetName>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <TargetName>Espresso64</TargetName>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x86'">
+    <TargetName>Espresso32</TargetName>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <TargetName>Espresso64</TargetName>
+  </PropertyGroup>
+  <ItemDefinitionGroup>
+    <ClCompile>
+      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Debug|x86'">_CRT_SECURE_NO_WARNINGS;_DEBUG;_WINDOWS;_USRDLL;Espresso_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|x86'">_CRT_SECURE_NO_WARNINGS;NDEBUG;_WINDOWS;_USRDLL;Espresso_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">_CRT_SECURE_NO_WARNINGS;_DEBUG;_WINDOWS;_USRDLL;Espresso_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|x64'">_CRT_SECURE_NO_WARNINGS;NDEBUG;_WINDOWS;_USRDLL;Espresso_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|x86'">include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release|x86'">include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release|x64'">include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets" />
+</Project>

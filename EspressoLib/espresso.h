@@ -12,7 +12,7 @@
 
 #undef NO_INLINE
 
-
+ 
 /*-----THIS USED TO BE set.h----- */
 
 /*
@@ -132,8 +132,8 @@ typedef struct set_family {
  */
 #define foreach_set_element(p, i, val, base) 		\
     for(i = LOOP(p); i > 0; )				\
-	for(val = p[i], base = --i << LOGBPI; val != 0; base++, val >>= 1)  \
-	    if (val & 1)
+    for(val = p[i], base = --i << LOGBPI; val != 0; base++, val >>= 1)  \
+        if (val & 1)
 
 /* Return a pointer to a given member of a set family */
 #define GETSET(family, index)   ((family)->data + (family)->wsize * (index))
@@ -226,7 +226,7 @@ typedef struct set_family {
 /* Table for efficient bit counting */
 extern int bit_count[256];
 /*----- END OF set.h ----- */
-
+ 
 /* Define a boolean type */
 #define bool	int
 #define FALSE	0
@@ -386,10 +386,10 @@ typedef struct {
 
 #define PUTINPUT(c, pos, value)\
     c[WHICH_WORD(2*pos)] = (c[WHICH_WORD(2*pos)] & ~(3 << WHICH_BIT(2*pos)))\
-		| (value << WHICH_BIT(2*pos))
+        | (value << WHICH_BIT(2*pos))
 #define PUTOUTPUT(c, pos, value)\
     c[WHICH_WORD(pos)] = (c[WHICH_WORD(pos)] & (1 << WHICH_BIT(pos)))\
-		| (value << WHICH_BIT(pos))
+        | (value << WHICH_BIT(pos))
 
 #define TWO     3
 #define DASH    3
@@ -406,7 +406,7 @@ typedef struct {
 /* lightweight EXECUTE */
 #define S_EXECUTE(fct,i)\
     {long t=ptime();fct;s_totals(t,i);}
-
+ 
 /*
  *    Global Variable Declarations
  */
@@ -496,7 +496,7 @@ extern struct cdata_struct cdata, temp_cdata_save;
 #define DISJOINT 0x5555
 #endif
 
-
+ 
 /* function declarations */
 
 /* cofactor.c */ extern int binate_split_select (pset *T, register pset cleft, register pset cright, int debug_flag);

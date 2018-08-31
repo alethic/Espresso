@@ -30,7 +30,7 @@
 #endif
 
 /* default */
-#if !defined(BSD) && !defined(UNIX10) && !defined(UNIX60) && !defined(UNIX100)
+#if !defined(BSD) && !defined(UNIX10) && !defined(UNIX60) && !defined(UNIX100) && !defined(_WINDOWS)
 #define BSD
 #endif
 

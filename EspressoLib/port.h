@@ -166,10 +166,10 @@ extern int memcmp(), strcmp();
 #ifndef NDEBUG
 #define assert(ex) {\
     if (! (ex)) {\
-	(void) fprintf(stderr, "Assertion failed: file %s, line %d\n",\
-	    __FILE__, __LINE__);\
-	(void) fflush(stdout);\
-	abort();\
+    (void) fprintf(stderr, "Assertion failed: file %s, line %d\n",\
+        __FILE__, __LINE__);\
+    (void) fflush(stdout);\
+    abort();\
     }\
 }
 #else
