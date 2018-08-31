@@ -47,45 +47,45 @@ bool full_row(register pset p, register pset cof)
     do if ((p[i] | cof[i]) != cube.fullset[i]) return FALSE; while (--i > 0);
     return TRUE;
 }
- 
+
 /*
     cdist0 -- return TRUE if a and b are distance 0 apart
 */
 
 bool cdist0(register pset a, register pset b)
 {
- {  /* Check binary variables */
-    register int w, last; register unsigned int x;
-    if ((last = cube.inword) != -1) {
+    {  /* Check binary variables */
+        register int w, last; register unsigned int x;
+        if ((last = cube.inword) != -1) {
 
-    /* Check the partial word of binary variables */
-    x = a[last] & b[last];
-    if (~(x | x >> 1) & cube.inmask)
-        return FALSE;               /* disjoint in some variable */
+            /* Check the partial word of binary variables */
+            x = a[last] & b[last];
+            if (~(x | x >> 1) & cube.inmask)
+                return FALSE;               /* disjoint in some variable */
 
-    /* Check the full words of binary variables */
-    for(w = 1; w < last; w++) {
-        x = a[w] & b[w];
-        if (~(x | x >> 1) & DISJOINT)
-        return FALSE;           /* disjoint in some variable */
+            /* Check the full words of binary variables */
+            for (w = 1; w < last; w++) {
+                x = a[w] & b[w];
+                if (~(x | x >> 1) & DISJOINT)
+                    return FALSE;           /* disjoint in some variable */
+            }
+        }
     }
-    }
- }
 
- {  /* Check the multiple-valued variables */
-    register int w, var, last; register pcube mask;
-    for(var = cube.num_binary_vars; var < cube.num_vars; var++) {
-    mask = cube.var_mask[var]; last = cube.last_word[var];
-    for(w = cube.first_word[var]; w <= last; w++)
-        if (a[w] & b[w] & mask[w])
-        goto nextvar;
-    return FALSE;           /* disjoint in this variable */
-    nextvar: ;
+    {  /* Check the multiple-valued variables */
+        register int w, var, last; register pcube mask;
+        for (var = cube.num_binary_vars; var < cube.num_vars; var++) {
+            mask = cube.var_mask[var]; last = cube.last_word[var];
+            for (w = cube.first_word[var]; w <= last; w++)
+                if (a[w] & b[w] & mask[w])
+                    goto nextvar;
+            return FALSE;           /* disjoint in this variable */
+        nextvar:;
+        }
     }
- }
     return TRUE;
 }
- 
+
 /*
     cdist01 -- return the "distance" between two cubes (defined as the
     number of null variables in their intersection).  If the distance
@@ -96,41 +96,41 @@ int cdist01(register pset a, register pset b)
 {
     int dist = 0;
 
- {  /* Check binary variables */
-    register int w, last; register unsigned int x;
-    if ((last = cube.inword) != -1) {
+    {  /* Check binary variables */
+        register int w, last; register unsigned int x;
+        if ((last = cube.inword) != -1) {
 
-    /* Check the partial word of binary variables */
-    x = a[last] & b[last];
-    if ((x = ~ (x | x >> 1) & cube.inmask))
-        if ((dist = count_ones(x)) > 1)
-        return 2;
+            /* Check the partial word of binary variables */
+            x = a[last] & b[last];
+            if ((x = ~(x | x >> 1) & cube.inmask))
+                if ((dist = count_ones(x)) > 1)
+                    return 2;
 
-    /* Check the full words of binary variables */
-    for(w = 1; w < last; w++) {
-        x = a[w] & b[w];
-        if ((x = ~ (x | x >> 1) & DISJOINT))
-        if (dist == 1 || (dist += count_ones(x)) > 1)
-            return 2;
+            /* Check the full words of binary variables */
+            for (w = 1; w < last; w++) {
+                x = a[w] & b[w];
+                if ((x = ~(x | x >> 1) & DISJOINT))
+                    if (dist == 1 || (dist += count_ones(x)) > 1)
+                        return 2;
+            }
+        }
     }
-    }
- }
 
- {  /* Check the multiple-valued variables */
-    register int w, var, last; register pcube mask;
-    for(var = cube.num_binary_vars; var < cube.num_vars; var++) {
-    mask = cube.var_mask[var]; last = cube.last_word[var];
-    for(w = cube.first_word[var]; w <= last; w++)
-        if (a[w] & b[w] & mask[w])
-        goto nextvar;
-    if (++dist > 1)
-        return 2;
-    nextvar: ;
+    {  /* Check the multiple-valued variables */
+        register int w, var, last; register pcube mask;
+        for (var = cube.num_binary_vars; var < cube.num_vars; var++) {
+            mask = cube.var_mask[var]; last = cube.last_word[var];
+            for (w = cube.first_word[var]; w <= last; w++)
+                if (a[w] & b[w] & mask[w])
+                    goto nextvar;
+            if (++dist > 1)
+                return 2;
+        nextvar:;
+        }
     }
- }
     return dist;
 }
- 
+
 /*
     cdist -- return the "distance" between two cubes (defined as the
     number of null variables in their intersection).
@@ -140,38 +140,38 @@ int cdist(register pset a, register pset b)
 {
     int dist = 0;
 
- {  /* Check binary variables */
-    register int w, last; register unsigned int x;
-    if ((last = cube.inword) != -1) {
+    {  /* Check binary variables */
+        register int w, last; register unsigned int x;
+        if ((last = cube.inword) != -1) {
 
-    /* Check the partial word of binary variables */
-    x = a[last] & b[last];
-    if ((x = ~ (x | x >> 1) & cube.inmask))
-        dist = count_ones(x);
+            /* Check the partial word of binary variables */
+            x = a[last] & b[last];
+            if ((x = ~(x | x >> 1) & cube.inmask))
+                dist = count_ones(x);
 
-    /* Check the full words of binary variables */
-    for(w = 1; w < last; w++) {
-        x = a[w] & b[w];
-        if ((x = ~ (x | x >> 1) & DISJOINT))
-        dist += count_ones(x);
+            /* Check the full words of binary variables */
+            for (w = 1; w < last; w++) {
+                x = a[w] & b[w];
+                if ((x = ~(x | x >> 1) & DISJOINT))
+                    dist += count_ones(x);
+            }
+        }
     }
-    }
- }
 
- {  /* Check the multiple-valued variables */
-    register int w, var, last; register pcube mask;
-    for(var = cube.num_binary_vars; var < cube.num_vars; var++) {
-    mask = cube.var_mask[var]; last = cube.last_word[var];
-    for(w = cube.first_word[var]; w <= last; w++)
-        if (a[w] & b[w] & mask[w])
-        goto nextvar;
-    dist++;
-    nextvar: ;
+    {  /* Check the multiple-valued variables */
+        register int w, var, last; register pcube mask;
+        for (var = cube.num_binary_vars; var < cube.num_vars; var++) {
+            mask = cube.var_mask[var]; last = cube.last_word[var];
+            for (w = cube.first_word[var]; w <= last; w++)
+                if (a[w] & b[w] & mask[w])
+                    goto nextvar;
+            dist++;
+        nextvar:;
+        }
     }
- }
     return dist;
 }
- 
+
 /*
     force_lower -- Determine which variables of a do not intersect b.
 */
@@ -179,39 +179,39 @@ int cdist(register pset a, register pset b)
 pset force_lower(pset xlower, register pset a, register pset b)
 {
 
- {  /* Check binary variables (if any) */
-    register int w, last; register unsigned int x;
-    if ((last = cube.inword) != -1) {
+    {  /* Check binary variables (if any) */
+        register int w, last; register unsigned int x;
+        if ((last = cube.inword) != -1) {
 
-    /* Check the partial word of binary variables */
-    x = a[last] & b[last];
-    if ((x = ~(x | x >> 1) & cube.inmask))
-        xlower[last] |= (x | (x << 1)) & a[last];
+            /* Check the partial word of binary variables */
+            x = a[last] & b[last];
+            if ((x = ~(x | x >> 1) & cube.inmask))
+                xlower[last] |= (x | (x << 1)) & a[last];
 
-    /* Check the full words of binary variables */
-    for(w = 1; w < last; w++) {
-        x = a[w] & b[w];
-        if ((x = ~(x | x >> 1) & DISJOINT))
-        xlower[w] |= (x | (x << 1)) & a[w];
+            /* Check the full words of binary variables */
+            for (w = 1; w < last; w++) {
+                x = a[w] & b[w];
+                if ((x = ~(x | x >> 1) & DISJOINT))
+                    xlower[w] |= (x | (x << 1)) & a[w];
+            }
+        }
     }
-    }
- }
 
- {  /* Check the multiple-valued variables */
-    register int w, var, last; register pcube mask;
-    for(var = cube.num_binary_vars; var < cube.num_vars; var++) {
-    mask = cube.var_mask[var]; last = cube.last_word[var];
-    for(w = cube.first_word[var]; w <= last; w++)
-        if (a[w] & b[w] & mask[w])
-        goto nextvar;
-    for(w = cube.first_word[var]; w <= last; w++)
-        xlower[w] |= a[w] & mask[w];
-    nextvar: ;
+    {  /* Check the multiple-valued variables */
+        register int w, var, last; register pcube mask;
+        for (var = cube.num_binary_vars; var < cube.num_vars; var++) {
+            mask = cube.var_mask[var]; last = cube.last_word[var];
+            for (w = cube.first_word[var]; w <= last; w++)
+                if (a[w] & b[w] & mask[w])
+                    goto nextvar;
+            for (w = cube.first_word[var]; w <= last; w++)
+                xlower[w] |= a[w] & mask[w];
+        nextvar:;
+        }
     }
- }
     return xlower;
 }
- 
+
 /*
     consensus -- multiple-valued consensus
 
@@ -229,42 +229,42 @@ void consensus(pset r, register pset a, register pset b)
 {
     INLINEset_clear(r, cube.size);
 
- {  /* Check binary variables (if any) */
-    register int w, last; register unsigned int x;
-    if ((last = cube.inword) != -1) {
+    {  /* Check binary variables (if any) */
+        register int w, last; register unsigned int x;
+        if ((last = cube.inword) != -1) {
 
-    /* Check the partial word of binary variables */
-    r[last] = x = a[last] & b[last];
-    if ((x = ~(x | x >> 1) & cube.inmask))
-        r[last] |= (x | (x << 1)) & (a[last] | b[last]);
+            /* Check the partial word of binary variables */
+            r[last] = x = a[last] & b[last];
+            if ((x = ~(x | x >> 1) & cube.inmask))
+                r[last] |= (x | (x << 1)) & (a[last] | b[last]);
 
-    /* Check the full words of binary variables */
-    for(w = 1; w < last; w++) {
-        r[w] = x = a[w] & b[w];
-        if ((x = ~(x | x >> 1) & DISJOINT))
-        r[w] |= (x | (x << 1)) & (a[w] | b[w]);
+            /* Check the full words of binary variables */
+            for (w = 1; w < last; w++) {
+                r[w] = x = a[w] & b[w];
+                if ((x = ~(x | x >> 1) & DISJOINT))
+                    r[w] |= (x | (x << 1)) & (a[w] | b[w]);
+            }
+        }
     }
-    }
- }
 
 
- {  /* Check the multiple-valued variables */
-    bool empty; int var; unsigned int x;
-    register int w, last; register pcube mask;
-    for(var = cube.num_binary_vars; var < cube.num_vars; var++) {
-    mask = cube.var_mask[var];
-    last = cube.last_word[var];
-    empty = TRUE;
-    for(w = cube.first_word[var]; w <= last; w++)
-        if ((x = a[w] & b[w] & mask[w]))
-        empty = FALSE, r[w] |= x;
-    if (empty)
-        for(w = cube.first_word[var]; w <= last; w++)
-        r[w] |= mask[w] & (a[w] | b[w]);
+    {  /* Check the multiple-valued variables */
+        bool empty; int var; unsigned int x;
+        register int w, last; register pcube mask;
+        for (var = cube.num_binary_vars; var < cube.num_vars; var++) {
+            mask = cube.var_mask[var];
+            last = cube.last_word[var];
+            empty = TRUE;
+            for (w = cube.first_word[var]; w <= last; w++)
+                if ((x = a[w] & b[w] & mask[w]))
+                    empty = FALSE, r[w] |= x;
+            if (empty)
+                for (w = cube.first_word[var]; w <= last; w++)
+                    r[w] |= mask[w] & (a[w] | b[w]);
+        }
     }
- }
 }
- 
+
 /*
     cactive -- return the index of the single active variable in
     the cube, or return -1 if there are none or more than 2.
@@ -274,49 +274,49 @@ int cactive(register pset a)
 {
     int active = -1, dist = 0, bit_index(register unsigned int a);
 
- {  /* Check binary variables */
-    register int w, last;
-    register unsigned int x;
-    if ((last = cube.inword) != -1) {
+    {  /* Check binary variables */
+        register int w, last;
+        register unsigned int x;
+        if ((last = cube.inword) != -1) {
 
-    /* Check the partial word of binary variables */
-    x = a[last];
-    if ((x = ~ (x & x >> 1) & cube.inmask)) {
-        if ((dist = count_ones(x)) > 1)
-        return -1;		/* more than 2 active variables */
-        active = (last-1)*(BPI/2) + bit_index(x) / 2;
-    }
+            /* Check the partial word of binary variables */
+            x = a[last];
+            if ((x = ~(x & x >> 1) & cube.inmask)) {
+                if ((dist = count_ones(x)) > 1)
+                    return -1;		/* more than 2 active variables */
+                active = (last - 1)*(BPI / 2) + bit_index(x) / 2;
+            }
 
-    /* Check the full words of binary variables */
-    for(w = 1; w < last; w++) {
-        x = a[w];
-        if ((x = ~ (x & x >> 1) & DISJOINT)) {
-        if ((dist += count_ones(x)) > 1)
-            return -1;		/* more than 2 active variables */
-        active = (w-1)*(BPI/2) + bit_index(x) / 2;
+            /* Check the full words of binary variables */
+            for (w = 1; w < last; w++) {
+                x = a[w];
+                if ((x = ~(x & x >> 1) & DISJOINT)) {
+                    if ((dist += count_ones(x)) > 1)
+                        return -1;		/* more than 2 active variables */
+                    active = (w - 1)*(BPI / 2) + bit_index(x) / 2;
+                }
+            }
         }
     }
-    }
- }
 
- {  /* Check the multiple-valued variables */
-    register int w, var, last;
-    register pcube mask;
-    for(var = cube.num_binary_vars; var < cube.num_vars; var++) {
-    mask = cube.var_mask[var];
-    last = cube.last_word[var];
-    for(w = cube.first_word[var]; w <= last; w++)
-        if (mask[w] & ~ a[w]) {
-        if (++dist > 1)
-            return -1;
-        active = var;
-        break;
+    {  /* Check the multiple-valued variables */
+        register int w, var, last;
+        register pcube mask;
+        for (var = cube.num_binary_vars; var < cube.num_vars; var++) {
+            mask = cube.var_mask[var];
+            last = cube.last_word[var];
+            for (w = cube.first_word[var]; w <= last; w++)
+                if (mask[w] & ~a[w]) {
+                    if (++dist > 1)
+                        return -1;
+                    active = var;
+                    break;
+                }
         }
     }
- }
- return active;
+    return active;
 }
- 
+
 /*
     ccommon -- return TRUE if a and b are share "active" variables
     active variables include variables that are empty;
@@ -324,49 +324,49 @@ int cactive(register pset a)
 
 bool ccommon(register pset a, register pset b, register pset cof)
 {
- {  /* Check binary variables */
-    int last;
-    register int w;
-    register unsigned int x, y;
-    if ((last = cube.inword) != -1) {
+    {  /* Check binary variables */
+        int last;
+        register int w;
+        register unsigned int x, y;
+        if ((last = cube.inword) != -1) {
 
-    /* Check the partial word of binary variables */
-    x = a[last] | cof[last];
-    y = b[last] | cof[last];
-    if (~(x & x>>1) & ~(y & y>>1) & cube.inmask)
-        return TRUE;
+            /* Check the partial word of binary variables */
+            x = a[last] | cof[last];
+            y = b[last] | cof[last];
+            if (~(x & x >> 1) & ~(y & y >> 1) & cube.inmask)
+                return TRUE;
 
-    /* Check the full words of binary variables */
-    for(w = 1; w < last; w++) {
-        x = a[w] | cof[w];
-        y = b[w] | cof[w];
-        if (~(x & x>>1) & ~(y & y>>1) & DISJOINT)
-        return TRUE;
-    }
-    }
- }
-
- {  /* Check the multiple-valued variables */
-    int var;
-    register int w, last;
-    register pcube mask;
-    for(var = cube.num_binary_vars; var < cube.num_vars; var++) {
-    mask = cube.var_mask[var]; last = cube.last_word[var];
-    /* Check for some part missing from a */
-    for(w = cube.first_word[var]; w <= last; w++)
-        if (mask[w] & ~a[w] & ~cof[w]) {
-
-        /* If so, check for some part missing from b */
-        for(w = cube.first_word[var]; w <= last; w++)
-            if (mask[w] & ~b[w] & ~cof[w])
-            return TRUE;            /* both active */
-        break;
+            /* Check the full words of binary variables */
+            for (w = 1; w < last; w++) {
+                x = a[w] | cof[w];
+                y = b[w] | cof[w];
+                if (~(x & x >> 1) & ~(y & y >> 1) & DISJOINT)
+                    return TRUE;
+            }
         }
     }
- }
+
+    {  /* Check the multiple-valued variables */
+        int var;
+        register int w, last;
+        register pcube mask;
+        for (var = cube.num_binary_vars; var < cube.num_vars; var++) {
+            mask = cube.var_mask[var]; last = cube.last_word[var];
+            /* Check for some part missing from a */
+            for (w = cube.first_word[var]; w <= last; w++)
+                if (mask[w] & ~a[w] & ~cof[w]) {
+
+                    /* If so, check for some part missing from b */
+                    for (w = cube.first_word[var]; w <= last; w++)
+                        if (mask[w] & ~b[w] & ~cof[w])
+                            return TRUE;            /* both active */
+                    break;
+                }
+        }
+    }
     return FALSE;
 }
- 
+
 /*
     These routines compare two sets (cubes) for the qsort() routine and
     return:
@@ -388,10 +388,10 @@ int descend(pset *a, pset *b)
     if (SIZE(a1) > SIZE(b1)) return -1;
     else if (SIZE(a1) < SIZE(b1)) return 1;
     else {
-    register int i = LOOP(a1);
-    do
-        if (a1[i] > b1[i]) return -1; else if (a1[i] < b1[i]) return 1;
-    while (--i > 0);
+        register int i = LOOP(a1);
+        do
+            if (a1[i] > b1[i]) return -1; else if (a1[i] < b1[i]) return 1;
+        while (--i > 0);
     }
     return 0;
 }
@@ -403,10 +403,10 @@ int ascend(pset *a, pset *b)
     if (SIZE(a1) > SIZE(b1)) return 1;
     else if (SIZE(a1) < SIZE(b1)) return -1;
     else {
-    register int i = LOOP(a1);
-    do
-        if (a1[i] > b1[i]) return 1; else if (a1[i] < b1[i]) return -1;
-    while (--i > 0);
+        register int i = LOOP(a1);
+        do
+            if (a1[i] > b1[i]) return 1; else if (a1[i] < b1[i]) return -1;
+        while (--i > 0);
     }
     return 0;
 }
@@ -418,7 +418,7 @@ int lex_order(pset *a, pset *b)
     register pset a1 = *a, b1 = *b;
     register int i = LOOP(a1);
     do
-    if (a1[i] > b1[i]) return -1; else if (a1[i] < b1[i]) return 1;
+        if (a1[i] > b1[i]) return -1; else if (a1[i] < b1[i]) return 1;
     while (--i > 0);
     return 0;
 }
@@ -431,8 +431,8 @@ int d1_order(pset *a, pset *b)
     register int i = LOOP(a1);
     register unsigned int x1, x2;
     do
-    if ((x1 = a1[i] | c1[i]) > (x2 = b1[i] | c1[i])) return -1;
-    else if (x1 < x2) return 1;
+        if ((x1 = a1[i] | c1[i]) > (x2 = b1[i] | c1[i])) return -1;
+        else if (x1 < x2) return 1;
     while (--i > 0);
     return 0;
 }
@@ -443,17 +443,17 @@ int d1_order(pset *a, pset *b)
 order */
 int desc1(register pset a, register pset b)
 {
-    if (a == (pset) NULL)
-    return (b == (pset) NULL) ? 0 : 1;
-    else if (b == (pset) NULL)
-    return -1;
+    if (a == (pset)NULL)
+        return (b == (pset)NULL) ? 0 : 1;
+    else if (b == (pset)NULL)
+        return -1;
     if (SIZE(a) > SIZE(b)) return -1;
     else if (SIZE(a) < SIZE(b)) return 1;
     else {
-    register int i = LOOP(a);
-    do
-        if (a[i] > b[i]) return -1; else if (a[i] < b[i]) return 1;
-    while (--i > 0);
+        register int i = LOOP(a);
+        do
+            if (a[i] > b[i]) return -1; else if (a[i] < b[i]) return 1;
+        while (--i > 0);
     }
     return 0;
 }

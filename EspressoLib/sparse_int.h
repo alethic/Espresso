@@ -59,9 +59,9 @@
     }
 
 
-/*
- *  double linked-list deletion
- */
+ /*
+  *  double linked-list deletion
+  */
 #define dll_unlink(p, first, last, next, prev, count) { \
     if (p->prev == 0) { \
     first = p->next; \

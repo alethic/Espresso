@@ -16,25 +16,25 @@ void cover_cost(pset_family F, pcost cost)
     cost->total = cost->in = cost->out = cost->mv = cost->primes = 0;
 
     /* Count transistors (zeros) for each binary variable (inputs) */
-    for(var = 0; var < cube.num_binary_vars; var++)
-    cost->in += cdata.var_zeros[var];
+    for (var = 0; var < cube.num_binary_vars; var++)
+        cost->in += cdata.var_zeros[var];
 
     /* Count transistors for each mv variable based on sparse/dense */
-    for(var = cube.num_binary_vars; var < cube.num_vars - 1; var++)
-    if (cube.sparse[var])
-        cost->mv += F->count * cube.part_size[var] - cdata.var_zeros[var];
-    else
-        cost->mv += cdata.var_zeros[var];
+    for (var = cube.num_binary_vars; var < cube.num_vars - 1; var++)
+        if (cube.sparse[var])
+            cost->mv += F->count * cube.part_size[var] - cdata.var_zeros[var];
+        else
+            cost->mv += cdata.var_zeros[var];
 
     /* Count the transistors (ones) for the output variable */
     if (cube.num_binary_vars != cube.num_vars) {
-    var = cube.num_vars - 1;
-    cost->out = F->count * cube.part_size[var] - cdata.var_zeros[var];
+        var = cube.num_vars - 1;
+        cost->out = F->count * cube.part_size[var] - cdata.var_zeros[var];
     }
 
     /* Count the number of nonprime cubes */
     foreach_set(F, last, p)
-    cost->primes += TESTP(p, PRIME) != 0;
+        cost->primes += TESTP(p, PRIME) != 0;
 
     /* Count the total number of literals */
     cost->total = cost->in + cost->out + cost->mv;
@@ -47,13 +47,13 @@ char *fmt_cost(pcost cost)
     static char s[200];
 
     if (cube.num_binary_vars == cube.num_vars - 1)
-    (void) sprintf(s, "c=%d(%d) in=%d out=%d tot=%d",
-        cost->cubes, cost->cubes - cost->primes, cost->in,
-        cost->out, cost->total);
+        (void)sprintf(s, "c=%d(%d) in=%d out=%d tot=%d",
+            cost->cubes, cost->cubes - cost->primes, cost->in,
+            cost->out, cost->total);
     else
-    (void) sprintf(s, "c=%d(%d) in=%d mv=%d out=%d",
-       cost->cubes, cost->cubes - cost->primes, cost->in,
-       cost->mv, cost->out);
+        (void)sprintf(s, "c=%d(%d) in=%d mv=%d out=%d",
+            cost->cubes, cost->cubes - cost->primes, cost->in,
+            cost->mv, cost->out);
     return s;
 }
 
@@ -82,7 +82,7 @@ void copy_cost(pcost s, pcost d)
 void size_stamp(pset_family T, char *name)
 {
     printf("# %s\tCost is %s\n", name, print_cost(T));
-    (void) fflush(stdout);
+    (void)fflush(stdout);
 }
 
 
@@ -90,8 +90,8 @@ void size_stamp(pset_family T, char *name)
 void print_trace(pset_family T, char *name, long int time)
 {
     printf("# %s\tTime was %s, cost is %s\n",
-    name, print_time(time), print_cost(T));
-    (void) fflush(stdout);
+        name, print_time(time), print_cost(T));
+    (void)fflush(stdout);
 }
 
 
@@ -103,9 +103,9 @@ void totals(long int time, int i, pset_family T, pcost cost)
     total_calls[i]++;
     cover_cost(T, cost);
     if (trace) {
-    printf("# %s\tTime was %s, cost is %s\n",
-        total_name[i], print_time(time), fmt_cost(cost));
-    (void) fflush(stdout);
+        printf("# %s\tTime was %s, cost is %s\n",
+            total_name[i], print_time(time), fmt_cost(cost));
+        (void)fflush(stdout);
     }
 }
 

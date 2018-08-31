@@ -594,8 +594,6 @@ int getPLA(int opt, int argc, char **argv, int option, pPLA *PLA, int out_type)
     }
     (*PLA)->filename = strdup(fname);
     filename = (*PLA)->filename;
-    /*    (void) fclose(fp);*/
-    /* hackto support -Dmany */
     last_fp = fp;
 }
 

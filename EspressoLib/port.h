@@ -7,9 +7,9 @@
  * int16 should be similarly defined
  */
 
-/* AB Stuff */
+ /* AB Stuff */
 
-typedef int (* qsort_compare_func)(const void *, const void *);
+typedef int(*qsort_compare_func)(const void *, const void *);
 
 /* XXX hack */
 #ifndef MACHDEP_INCLUDED
@@ -110,7 +110,7 @@ typedef int int16;
 #endif /* __STDC__ */
 
 
-/* Some machines fail to define some functions in stdio.h */
+ /* Some machines fail to define some functions in stdio.h */
 #ifndef __STDC__
 extern FILE *popen(), *tmpfile();
 extern int pclose();

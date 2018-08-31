@@ -17,7 +17,7 @@
     if ((obj)) { (void) free((char *) (obj)); (obj) = 0; }
 
 extern long  util_cpu_time(void);
-extern char *util_print_time (long t);
+extern char *util_print_time(long t);
 
 #ifndef NIL_FN
 #define NIL_FN(type) ((type (*)()) 0)

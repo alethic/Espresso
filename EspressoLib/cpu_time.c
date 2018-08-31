@@ -62,13 +62,13 @@ long util_cpu_time(void)
 
 #ifdef BSD
     struct rusage rusage;
-    (void) getrusage(RUSAGE_SELF, &rusage);
-    t = (long) rusage.ru_utime.tv_sec*1000 + rusage.ru_utime.tv_usec/1000;
+    (void)getrusage(RUSAGE_SELF, &rusage);
+    t = (long)rusage.ru_utime.tv_sec * 1000 + rusage.ru_utime.tv_usec / 1000;
 #endif
 
 #ifdef UNIX10			/* times() with 10 Hz resolution */
     struct tms buffer;
-    (void) times(&buffer);
+    (void)times(&buffer);
     t = buffer.tms_utime * 100;
 #endif
 
@@ -82,6 +82,10 @@ long util_cpu_time(void)
     struct tms buffer;		/* times() with 100 Hz resolution */
     times(&buffer);
     t = buffer.tms_utime * 10;
+#endif
+
+#ifdef _WINDOWS
+    t = GetTickCount();
 #endif
 
     return t;

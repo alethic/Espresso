@@ -41,49 +41,50 @@ do_minimize(pset_family F, pset_family D, pset_family R, int exact_cover, int we
     int debug_save = debug;
 
     if (debug & EXACT) {
-    debug |= (IRRED | MINCOV);
+        debug |= (IRRED | MINCOV);
     }
 #if defined(sun) || defined(bsd4_2)			/* hack ... */
     if (debug & MINCOV) {
-    setlinebuf(stdout);
+        setlinebuf(stdout);
     }
 #endif
     level = (debug & MINCOV) ? 4 : 0;
-    heur = ! exact_cover;
+    heur = !exact_cover;
 
     /* Generate all prime implicants */
     EXEC(F = primes_consensus(cube2list(F, D)), "PRIMES     ", F);
 
     /* Setup the prime implicant table */
     EXEC(irred_split_cover(F, D, &E, &Rt, &Rp), "ESSENTIALS ", E);
-    EXEC(table = irred_derive_table(D, E, Rp),  "PI-TABLE   ", Rp);
+    EXEC(table = irred_derive_table(D, E, Rp), "PI-TABLE   ", Rp);
 
     /* Solve either a weighted or nonweighted covering problem */
     if (weighted) {
-    /* correct only for all 2-valued variables */
-    weights = ALLOC(int, F->count);
-    foreach_set(Rp, last, p) {
-        weights[SIZE(p)] = cube.size - set_ord(p);
+        /* correct only for all 2-valued variables */
+        weights = ALLOC(int, F->count);
+        foreach_set(Rp, last, p) {
+            weights[SIZE(p)] = cube.size - set_ord(p);
+        }
     }
-    } else {
-    weights = NIL(int);
+    else {
+        weights = NIL(int);
     }
-    EXEC(cover=sm_minimum_cover(table,weights,heur,level), "MINCOV     ", F);
+    EXEC(cover = sm_minimum_cover(table, weights, heur, level), "MINCOV     ", F);
     if (weights != 0) {
-    FREE(weights);
+        FREE(weights);
     }
 
     if (debug & EXACT) {
-    dump_irredundant(E, Rt, Rp, table);
+        dump_irredundant(E, Rt, Rp, table);
     }
 
     /* Form the result cover */
     newF = new_cover(100);
     foreach_set(E, last, p) {
-    newF = sf_addset(newF, p);
+        newF = sf_addset(newF, p);
     }
     sm_foreach_row_element(cover, pe) {
-    newF = sf_addset(newF, GETSET(F, pe->col_num));
+        newF = sf_addset(newF, GETSET(F, pe->col_num));
     }
 
     free_cover(E);
@@ -94,15 +95,15 @@ do_minimize(pset_family F, pset_family D, pset_family R, int exact_cover, int we
     free_cover(F);
 
     /* Attempt to make the results more sparse */
-    debug &= ~ (IRRED | SHARP | MINCOV);
-    if (! skip_make_sparse && R != 0) {
-    newF = make_sparse(newF, D, R);
+    debug &= ~(IRRED | SHARP | MINCOV);
+    if (!skip_make_sparse && R != 0) {
+        newF = make_sparse(newF, D, R);
     }
 
     debug = debug_save;
     return newF;
 }
- 
+
 static void
 dump_irredundant(pset_family E, pset_family Rt, pset_family Rp, sm_matrix *table)
 {
@@ -112,20 +113,21 @@ dump_irredundant(pset_family E, pset_family Rt, pset_family Rp, sm_matrix *table
     char *file;
 
     if (filename == 0 || strcmp(filename, "(stdin)") == 0) {
-    fp_pi_table = fp_primes = stdout;
-    } else {
-    file = ALLOC(char, strlen(filename)+20);
-    (void) sprintf(file, "%s.primes", filename);
-    if ((fp_primes = fopen(file, "w")) == NULL) {
-        fprintf(stderr, "espresso: Unable to open %s\n", file);
-        fp_primes = stdout;
+        fp_pi_table = fp_primes = stdout;
     }
-    (void) sprintf(file, "%s.pi", filename);
-    if ((fp_pi_table = fopen(file, "w")) == NULL) {
-        fprintf(stderr, "espresso: Unable to open %s\n", file);
-        fp_pi_table = stdout;
-    }
-    FREE(file);
+    else {
+        file = ALLOC(char, strlen(filename) + 20);
+        (void)sprintf(file, "%s.primes", filename);
+        if ((fp_primes = fopen(file, "w")) == NULL) {
+            fprintf(stderr, "espresso: Unable to open %s\n", file);
+            fp_primes = stdout;
+        }
+        (void)sprintf(file, "%s.pi", filename);
+        if ((fp_pi_table = fopen(file, "w")) == NULL) {
+            fprintf(stderr, "espresso: Unable to open %s\n", file);
+            fp_pi_table = stdout;
+        }
+        FREE(file);
     }
 
     PLA = new_PLA();
@@ -134,24 +136,24 @@ dump_irredundant(pset_family E, pset_family Rt, pset_family Rp, sm_matrix *table
     fpr_header(fp_primes, PLA, F_type);
     free_PLA(PLA);
 
-    (void) fprintf(fp_primes, "# Essential primes are\n");
+    (void)fprintf(fp_primes, "# Essential primes are\n");
     foreach_set(E, last, p) {
-    (void) fprintf(fp_primes, "%s\n", pc1(p));
+        (void)fprintf(fp_primes, "%s\n", pc1(p));
     }
     fprintf(fp_primes, "# Totally redundant primes are\n");
     foreach_set(Rt, last, p) {
-    (void) fprintf(fp_primes, "%s\n", pc1(p));
+        (void)fprintf(fp_primes, "%s\n", pc1(p));
     }
     fprintf(fp_primes, "# Partially redundant primes are\n");
     foreach_set(Rp, last, p) {
-    (void) fprintf(fp_primes, "%s\n", pc1(p));
+        (void)fprintf(fp_primes, "%s\n", pc1(p));
     }
     if (fp_primes != stdout) {
-    (void) fclose(fp_primes);
+        (void)fclose(fp_primes);
     }
-    
+
     sm_write(fp_pi_table, table);
     if (fp_pi_table != stdout) {
-    (void) fclose(fp_pi_table);
+        (void)fclose(fp_pi_table);
     }
 }

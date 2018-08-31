@@ -33,15 +33,15 @@ solution_dup(solution_t *sol)
 }
 
 
-void 
+void
 solution_add(solution_t *sol, int *weight, int col)
 {
-    (void) sm_row_insert(sol->row, col);
+    (void)sm_row_insert(sol->row, col);
     sol->cost += WEIGHT(weight, col);
 }
 
 
-void 
+void
 solution_accept(solution_t *sol, sm_matrix *A, int *weight, int col)
 {
     register sm_element *p, *pnext;
@@ -51,15 +51,15 @@ solution_accept(solution_t *sol, sm_matrix *A, int *weight, int col)
 
     /* delete rows covered by this column */
     pcol = sm_get_col(A, col);
-    for(p = pcol->first_row; p != 0; p = pnext) {
-    pnext = p->next_row;		/* grab it before it disappears */
-    sm_delrow(A, p->row_num);
+    for (p = pcol->first_row; p != 0; p = pnext) {
+        pnext = p->next_row;		/* grab it before it disappears */
+        sm_delrow(A, p->row_num);
     }
 }
 
 
 /* ARGSUSED */
-void 
+void
 solution_reject(solution_t *sol, sm_matrix *A, int *weight, int col)
 {
     sm_delcol(A, col);
@@ -70,22 +70,26 @@ solution_t *
 solution_choose_best(solution_t *best1, solution_t *best2)
 {
     if (best1 != NIL(solution_t)) {
-    if (best2 != NIL(solution_t)) {
-        if (best1->cost <= best2->cost) {
-        solution_free(best2);
-        return best1;
-        } else {
-        solution_free(best1);
-        return best2;
+        if (best2 != NIL(solution_t)) {
+            if (best1->cost <= best2->cost) {
+                solution_free(best2);
+                return best1;
+            }
+            else {
+                solution_free(best1);
+                return best2;
+            }
         }
-    } else {
-        return best1;
+        else {
+            return best1;
+        }
     }
-    } else {
-    if (best2 != NIL(solution_t)) {
-        return best2;
-    } else {
-        return NIL(solution_t);
-    }
+    else {
+        if (best2 != NIL(solution_t)) {
+            return best2;
+        }
+        else {
+            return NIL(solution_t);
+        }
     }
 }

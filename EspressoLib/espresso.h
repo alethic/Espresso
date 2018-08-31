@@ -7,7 +7,7 @@
 #include "sparse.h"
 #include "mincov.h"
 
-#define ptime()		util_cpu_time()
+#define ptime()		    util_cpu_time()
 #define print_time(t)	util_print_time(t)
 
 #undef NO_INLINE

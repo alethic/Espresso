@@ -30,26 +30,26 @@ pcover essential(pset_family *Fp, pset_family *Dp)
     pcover E, F = *Fp, D = *Dp;
 
     /* set all cubes in F active */
-    (void) sf_active(F);
+    (void)sf_active(F);
 
     /* Might as well start out with some cubes in E */
     E = new_cover(10);
 
     foreach_set(F, last, p) {
-    /* don't test a prime which EXPAND says is nonessential */
-    if (! TESTP(p, NONESSEN)) {
-        /* only test a prime which was relatively essential */
-        if (TESTP(p, RELESSEN)) {
-        /* Check essentiality */
-        if (essen_cube(F, D, p)) {
-            if (debug & ESSEN)
-            printf("ESSENTIAL: %s\n", pc1(p));
-            E = sf_addset(E, p);
-            RESET(p, ACTIVE);
-            F->active_count--;
+        /* don't test a prime which EXPAND says is nonessential */
+        if (!TESTP(p, NONESSEN)) {
+            /* only test a prime which was relatively essential */
+            if (TESTP(p, RELESSEN)) {
+                /* Check essentiality */
+                if (essen_cube(F, D, p)) {
+                    if (debug & ESSEN)
+                        printf("ESSENTIAL: %s\n", pc1(p));
+                    E = sf_addset(E, p);
+                    RESET(p, ACTIVE);
+                    F->active_count--;
+                }
+            }
         }
-        }
-    }
     }
 
     *Fp = sf_inactive(F);               /* delete the inactive cubes from F */
@@ -57,7 +57,7 @@ pcover essential(pset_family *Fp, pset_family *Dp)
     sf_free(D);
     return E;
 }
- 
+
 /*
     essen_cube -- check if a single cube is essential or not
 
@@ -80,7 +80,7 @@ bool essen_cube(pset_family F, pset_family D, pset c)
 
     /* Add the don't care set, and see if this covers c */
     H1 = cube2list(H, D);
-    essen = ! cube_is_covered(H1, c);
+    essen = !cube_is_covered(H1, c);
     free_cubelist(H1);
 
     free_cover(H);
@@ -96,23 +96,23 @@ pcover cb_consensus(register pset_family T, register pset c)
     register pcube temp, last, p;
     register pcover R;
 
-    R = new_cover(T->count*2);
+    R = new_cover(T->count * 2);
     temp = new_cube();
     foreach_set(T, last, p) {
-    if (p != c) {
-        switch (cdist01(p, c)) {
-        case 0:
-            /* distance-0 needs special care */
-            R = cb_consensus_dist0(R, p, c);
-            break;
+        if (p != c) {
+            switch (cdist01(p, c)) {
+            case 0:
+                /* distance-0 needs special care */
+                R = cb_consensus_dist0(R, p, c);
+                break;
 
-        case 1:
-            /* distance-1 is easy because no sharping required */
-            consensus(temp, p, c);
-            R = sf_addset(R, temp);
-            break;
+            case 1:
+                /* distance-1 is easy because no sharping required */
+                consensus(temp, p, c);
+                R = sf_addset(R, temp);
+                break;
+            }
         }
-    }
     }
     set_free(temp);
     return R;
@@ -128,11 +128,11 @@ pcover cb_consensus_dist0(pset_family R, register pset p, register pset c)
     int var;
     bool got_one;
     register pcube temp, mask;
-    register pcube p_diff_c=cube.temp[0], p_and_c=cube.temp[1];
+    register pcube p_diff_c = cube.temp[0], p_and_c = cube.temp[1];
 
     /* If c contains p, then this gives us no information for essential test */
     if (setp_implies(p, c)) {
-    return R;
+        return R;
     }
 
     /* For the multiple-valued variables */
@@ -141,21 +141,21 @@ pcover cb_consensus_dist0(pset_family R, register pset p, register pset c)
     INLINEset_diff(p_diff_c, p, c);
     INLINEset_and(p_and_c, p, c);
 
-    for(var = cube.num_binary_vars; var < cube.num_vars; var++) {
-    /* Check if c(var) is contained in p(var) -- if so, no news */
-    mask = cube.var_mask[var];
-    if (! setp_disjoint(p_diff_c, mask)) {
-        INLINEset_merge(temp, c, p_and_c, mask);
-        R = sf_addset(R, temp);
-        got_one = TRUE;
-    }
+    for (var = cube.num_binary_vars; var < cube.num_vars; var++) {
+        /* Check if c(var) is contained in p(var) -- if so, no news */
+        mask = cube.var_mask[var];
+        if (!setp_disjoint(p_diff_c, mask)) {
+            INLINEset_merge(temp, c, p_and_c, mask);
+            R = sf_addset(R, temp);
+            got_one = TRUE;
+        }
     }
 
     /* if no cube so far, add one for the intersection */
-    if (! got_one && cube.num_binary_vars > 0) {
-    /* Add a single cube for the intersection of p and c */
-    INLINEset_and(temp, p, c);
-    R = sf_addset(R, temp);
+    if (!got_one && cube.num_binary_vars > 0) {
+        /* Add a single cube for the intersection of p and c */
+        INLINEset_and(temp, p, c);
+        R = sf_addset(R, temp);
     }
 
     set_free(temp);

@@ -17,7 +17,7 @@ struct {
     int num_plas;
     bool needs_offset;
     bool needs_dcset;
-} option_table [] = {
+} option_table[] = {
     /* ways to minimize functions */
     {"ESPRESSO", KEY_ESPRESSO, 1, TRUE, TRUE},    /* must be first */
     {"many", KEY_MANY_ESPRESSO, 1, TRUE, TRUE},
@@ -83,10 +83,10 @@ struct {
 } debug_table[] = {
     {"", EXPAND + ESSEN + IRRED + REDUCE + SPARSE + GASP + SHARP + MINCOV},
     {"compl",   COMPL},  {"essen",       ESSEN},
-    {"expand",  EXPAND}, {"expand1",     EXPAND1|EXPAND},
-    {"irred",   IRRED},  {"irred1",      IRRED1|IRRED},
-    {"reduce",  REDUCE}, {"reduce1",     REDUCE1|REDUCE},
-    {"mincov",  MINCOV}, {"mincov1",     MINCOV1|MINCOV},
+    {"expand",  EXPAND}, {"expand1",     EXPAND1 | EXPAND},
+    {"irred",   IRRED},  {"irred1",      IRRED1 | IRRED},
+    {"reduce",  REDUCE}, {"reduce1",     REDUCE1 | REDUCE},
+    {"mincov",  MINCOV}, {"mincov1",     MINCOV1 | MINCOV},
     {"sparse",  SPARSE}, {"sharp",       SHARP},
     {"taut",    TAUT},   {"gasp",        GASP},
     {"exact",   EXACT},

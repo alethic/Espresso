@@ -3,7 +3,7 @@
 
 
 /*
- *  allocate a new col vector 
+ *  allocate a new col vector
  */
 sm_col * sm_col_alloc(void)
 {
@@ -11,10 +11,11 @@ sm_col * sm_col_alloc(void)
 
 #ifdef FAST_AND_LOOSE
     if (sm_col_freelist == NIL(sm_col)) {
-    pcol = ALLOC(sm_col, 1);
-    } else {
-    pcol = sm_col_freelist;
-    sm_col_freelist = pcol->next_col;
+        pcol = ALLOC(sm_col, 1);
+    }
+    else {
+        pcol = sm_col_freelist;
+        sm_col_freelist = pcol->next_col;
     }
 #else
     pcol = ALLOC(sm_col, 1);
@@ -40,9 +41,9 @@ void sm_col_free(register sm_col *pcol)
 {
 #if defined(FAST_AND_LOOSE) && ! defined(COLS)
     if (pcol->first_row != NIL(sm_element)) {
-    /* Add the linked list of col items to the free list */
-    pcol->last_row->next_row = sm_element_freelist;
-    sm_element_freelist = pcol->first_row;
+        /* Add the linked list of col items to the free list */
+        pcol->last_row->next_row = sm_element_freelist;
+        sm_element_freelist = pcol->first_row;
     }
 
     /* Add the col to the free list of cols */
@@ -51,9 +52,9 @@ void sm_col_free(register sm_col *pcol)
 #else
     register sm_element *p, *pnext;
 
-    for(p = pcol->first_row; p != 0; p = pnext) {
-    pnext = p->next_row;
-    sm_element_free(p);
+    for (p = pcol->first_row; p != 0; p = pnext) {
+        pnext = p->next_row;
+        sm_element_free(p);
     }
     FREE(pcol);
 #endif
@@ -69,15 +70,15 @@ sm_col * sm_col_dup(register sm_col *pcol)
     register sm_element *p;
 
     pnew = sm_col_alloc();
-    for(p = pcol->first_row; p != 0; p = p->next_row) {
-    (void) sm_col_insert(pnew, p->row_num);
+    for (p = pcol->first_row; p != 0; p = p->next_row) {
+        (void)sm_col_insert(pnew, p->row_num);
     }
     return pnew;
 }
 
 
 /*
- *  insert an element into a col vector 
+ *  insert an element into a col vector
  */
 sm_element * sm_col_insert(register sm_col *pcol, register int row)
 {
@@ -86,12 +87,12 @@ sm_element * sm_col_insert(register sm_col *pcol, register int row)
     /* get a new item, save its address */
     sm_element_alloc(element);
     test = element;
-    sorted_insert(sm_element, pcol->first_row, pcol->last_row, pcol->length, 
-            next_row, prev_row, row_num, row, test);
+    sorted_insert(sm_element, pcol->first_row, pcol->last_row, pcol->length,
+        next_row, prev_row, row_num, row, test);
 
     /* if item was not used, free it */
     if (element != test) {
-    sm_element_free(element);
+        sm_element_free(element);
     }
 
     /* either way, return the current new value */
@@ -100,18 +101,18 @@ sm_element * sm_col_insert(register sm_col *pcol, register int row)
 
 
 /*
- *  remove an element from a col vector 
+ *  remove an element from a col vector
  */
 void sm_col_remove(register sm_col *pcol, register int row)
 {
     register sm_element *p;
 
-    for(p = pcol->first_row; p != 0 && p->row_num < row; p = p->next_row)
-    ;
+    for (p = pcol->first_row; p != 0 && p->row_num < row; p = p->next_row)
+        ;
     if (p != 0 && p->row_num == row) {
-    dll_unlink(p, pcol->first_row, pcol->last_row, 
-                next_row, prev_row, pcol->length);
-    sm_element_free(p);
+        dll_unlink(p, pcol->first_row, pcol->last_row,
+            next_row, prev_row, pcol->length);
+        sm_element_free(p);
     }
 }
 
@@ -123,15 +124,16 @@ sm_element * sm_col_find(sm_col *pcol, int row)
 {
     register sm_element *p;
 
-    for(p = pcol->first_row; p != 0 && p->row_num < row; p = p->next_row)
-    ;
+    for (p = pcol->first_row; p != 0 && p->row_num < row; p = p->next_row)
+        ;
     if (p != 0 && p->row_num == row) {
-    return p;
-    } else {
-    return NIL(sm_element);
+        return p;
+    }
+    else {
+        return NIL(sm_element);
     }
 }
- 
+
 /*
  *  return 1 if col p2 contains col p1; 0 otherwise
  */
@@ -142,14 +144,16 @@ int sm_col_contains(sm_col *p1, sm_col *p2)
     q1 = p1->first_row;
     q2 = p2->first_row;
     while (q1 != 0) {
-    if (q2 == 0 || q1->row_num < q2->row_num) {
-        return 0;
-    } else if (q1->row_num == q2->row_num) {
-        q1 = q1->next_row;
-        q2 = q2->next_row;
-    } else {
-        q2 = q2->next_row;
-    }
+        if (q2 == 0 || q1->row_num < q2->row_num) {
+            return 0;
+        }
+        else if (q1->row_num == q2->row_num) {
+            q1 = q1->next_row;
+            q2 = q2->next_row;
+        }
+        else {
+            q2 = q2->next_row;
+        }
     }
     return 1;
 }
@@ -165,18 +169,20 @@ int sm_col_intersects(sm_col *p1, sm_col *p2)
     q1 = p1->first_row;
     q2 = p2->first_row;
     if (q1 == 0 || q2 == 0) return 0;
-    for(;;) {
-    if (q1->row_num < q2->row_num) {
-        if ((q1 = q1->next_row) == 0) {
-        return 0;
+    for (;;) {
+        if (q1->row_num < q2->row_num) {
+            if ((q1 = q1->next_row) == 0) {
+                return 0;
+            }
         }
-    } else if (q1->row_num > q2->row_num) {
-        if ((q2 = q2->next_row) == 0) {
-        return 0;
+        else if (q1->row_num > q2->row_num) {
+            if ((q2 = q2->next_row) == 0) {
+                return 0;
+            }
         }
-    } else {
-        return 1;
-    }
+        else {
+            return 1;
+        }
     }
 }
 
@@ -190,20 +196,22 @@ int sm_col_compare(sm_col *p1, sm_col *p2)
 
     q1 = p1->first_row;
     q2 = p2->first_row;
-    while(q1 != 0 && q2 != 0) {
-    if (q1->row_num != q2->row_num) {
-        return q1->row_num - q2->row_num;
-    }
-    q1 = q1->next_row;
-    q2 = q2->next_row;
+    while (q1 != 0 && q2 != 0) {
+        if (q1->row_num != q2->row_num) {
+            return q1->row_num - q2->row_num;
+        }
+        q1 = q1->next_row;
+        q2 = q2->next_row;
     }
 
     if (q1 != 0) {
-    return 1;
-    } else if (q2 != 0) {
-    return -1;
-    } else {
-    return 0;
+        return 1;
+    }
+    else if (q2 != 0) {
+        return -1;
+    }
+    else {
+        return 0;
     }
 }
 
@@ -220,46 +228,48 @@ sm_col * sm_col_and(sm_col *p1, sm_col *p2)
     q1 = p1->first_row;
     q2 = p2->first_row;
     if (q1 == 0 || q2 == 0) return result;
-    for(;;) {
-    if (q1->row_num < q2->row_num) {
-        if ((q1 = q1->next_row) == 0) {
-        return result;
+    for (;;) {
+        if (q1->row_num < q2->row_num) {
+            if ((q1 = q1->next_row) == 0) {
+                return result;
+            }
         }
-    } else if (q1->row_num > q2->row_num) {
-        if ((q2 = q2->next_row) == 0) {
-        return result;
+        else if (q1->row_num > q2->row_num) {
+            if ((q2 = q2->next_row) == 0) {
+                return result;
+            }
         }
-    } else {
-        (void) sm_col_insert(result, q1->row_num);
-        if ((q1 = q1->next_row) == 0) {
-        return result;
+        else {
+            (void)sm_col_insert(result, q1->row_num);
+            if ((q1 = q1->next_row) == 0) {
+                return result;
+            }
+            if ((q2 = q2->next_row) == 0) {
+                return result;
+            }
         }
-        if ((q2 = q2->next_row) == 0) {
-        return result;
-        }
-    }
     }
 }
- 
+
 int sm_col_hash(sm_col *pcol, int modulus)
 {
     register int sum;
     register sm_element *p;
 
     sum = 0;
-    for(p = pcol->first_row; p != 0; p = p->next_row) {
-    sum = (sum*17 + p->row_num) % modulus;
+    for (p = pcol->first_row; p != 0; p = p->next_row) {
+        sum = (sum * 17 + p->row_num) % modulus;
     }
     return sum;
 }
- 
+
 /*
- *  remove an element from a col vector (given a pointer to the element) 
+ *  remove an element from a col vector (given a pointer to the element)
  */
 void sm_col_remove_element(register sm_col *pcol, register sm_element *p)
 {
-    dll_unlink(p, pcol->first_row, pcol->last_row, 
-            next_row, prev_row, pcol->length);
+    dll_unlink(p, pcol->first_row, pcol->last_row,
+        next_row, prev_row, pcol->length);
     sm_element_free(p);
 }
 
@@ -268,7 +278,7 @@ void sm_col_print(FILE *fp, sm_col *pcol)
 {
     sm_element *p;
 
-    for(p = pcol->first_row; p != 0; p = p->next_row) {
-    (void) fprintf(fp, " %d", p->row_num);
+    for (p = pcol->first_row; p != 0; p = p->next_row) {
+        (void)fprintf(fp, " %d", p->row_num);
     }
 }
