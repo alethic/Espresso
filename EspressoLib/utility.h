@@ -12,7 +12,7 @@
     ((type *) malloc(sizeof(type) * (num)))
 #define REALLOC(type, obj, num)	\
     (obj) ? ((type *) realloc((char *) obj, sizeof(type) * (num))) : \
-	    ((type *) malloc(sizeof(type) * (num)))
+        ((type *) malloc(sizeof(type) * (num)))
 #define FREE(obj)		\
     if ((obj)) { (void) free((char *) (obj)); (obj) = 0; }
 

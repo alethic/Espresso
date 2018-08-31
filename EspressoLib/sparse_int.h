@@ -21,41 +21,41 @@
 
 #define sorted_insert(type, first, last, count, next, prev, value, newval, e) \
     if (last == 0) { \
-	e->value = newval; \
-	first = e; \
-	last = e; \
-	e->next = 0; \
-	e->prev = 0; \
-	count++; \
+    e->value = newval; \
+    first = e; \
+    last = e; \
+    e->next = 0; \
+    e->prev = 0; \
+    count++; \
     } else if (last->value < newval) { \
-	e->value = newval; \
-	last->next = e; \
-	e->prev = last; \
-	last = e; \
-	e->next = 0; \
-	count++; \
+    e->value = newval; \
+    last->next = e; \
+    e->prev = last; \
+    last = e; \
+    e->next = 0; \
+    count++; \
     } else if (first->value > newval) { \
-	e->value = newval; \
-	first->prev = e; \
-	e->next = first; \
-	first = e; \
-	e->prev = 0; \
-	count++; \
+    e->value = newval; \
+    first->prev = e; \
+    e->next = first; \
+    first = e; \
+    e->prev = 0; \
+    count++; \
     } else { \
-	type *p; \
-	for(p = first; p->value < newval; p = p->next) \
-	    ; \
-	if (p->value > newval) { \
-	    e->value = newval; \
-	    p = p->prev; \
-	    p->next->prev = e; \
-	    e->next = p->next; \
-	    p->next = e; \
-	    e->prev = p; \
-	    count++; \
-	} else { \
-	    e = p; \
-	} \
+    type *p; \
+    for(p = first; p->value < newval; p = p->next) \
+        ; \
+    if (p->value > newval) { \
+        e->value = newval; \
+        p = p->prev; \
+        p->next->prev = e; \
+        e->next = p->next; \
+        p->next = e; \
+        e->prev = p; \
+        count++; \
+    } else { \
+        e = p; \
+    } \
     }
 
 
@@ -64,14 +64,14 @@
  */
 #define dll_unlink(p, first, last, next, prev, count) { \
     if (p->prev == 0) { \
-	first = p->next; \
+    first = p->next; \
     } else { \
-	p->prev->next = p->next; \
+    p->prev->next = p->next; \
     } \
     if (p->next == 0) { \
-	last = p->prev; \
+    last = p->prev; \
     } else { \
-	p->next->prev = p->prev; \
+    p->next->prev = p->prev; \
     } \
     count--; \
 }
@@ -84,10 +84,10 @@ extern sm_col *sm_col_freelist;
 
 #define sm_element_alloc(newobj) \
     if (sm_element_freelist == NIL(sm_element)) { \
-	newobj = ALLOC(sm_element, 1); \
+    newobj = ALLOC(sm_element, 1); \
     } else { \
-	newobj = sm_element_freelist; \
-	sm_element_freelist = sm_element_freelist->next_col; \
+    newobj = sm_element_freelist; \
+    sm_element_freelist = sm_element_freelist->next_col; \
     } \
     newobj->user_word = NIL(char); \
 

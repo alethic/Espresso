@@ -75,29 +75,29 @@ struct sm_matrix_struct {
 
 #define sm_get_col(A, colnum)	\
     (((colnum) >= 0 && (colnum) < (A)->cols_size) ? \
-	(A)->cols[colnum] : (sm_col *) 0)
+    (A)->cols[colnum] : (sm_col *) 0)
 
 #define sm_get_row(A, rownum)	\
     (((rownum) >= 0 && (rownum) < (A)->rows_size) ? \
-	(A)->rows[rownum] : (sm_row *) 0)
+    (A)->rows[rownum] : (sm_row *) 0)
 
 #define sm_foreach_row(A, prow)	\
-	for(prow = A->first_row; prow != 0; prow = prow->next_row)
+    for(prow = A->first_row; prow != 0; prow = prow->next_row)
 
 #define sm_foreach_col(A, pcol)	\
-	for(pcol = A->first_col; pcol != 0; pcol = pcol->next_col)
+    for(pcol = A->first_col; pcol != 0; pcol = pcol->next_col)
 
 #define sm_foreach_row_element(prow, p)	\
-	for(p = prow->first_col; p != 0; p = p->next_col)
+    for(p = prow->first_col; p != 0; p = p->next_col)
 
 #define sm_foreach_col_element(pcol, p)	\
-	for(p = pcol->first_row; p != 0; p = p->next_row)
+    for(p = pcol->first_row; p != 0; p = p->next_row)
 
 #define sm_put(x, val) \
-	(x->user_word = (char *) val)
+    (x->user_word = (char *) val)
 
 #define sm_get(type, x) \
-	((type) (x->user_word))
+    ((type) (x->user_word))
 
 extern sm_matrix *sm_alloc(void), *sm_alloc_size(int row, int col), *sm_dup(sm_matrix *A);
 extern void sm_free(sm_matrix *A), sm_delrow(sm_matrix *A, int i), sm_delcol(sm_matrix *A, int i), sm_resize(register sm_matrix *A, int row, int col);

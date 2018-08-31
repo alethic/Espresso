@@ -50,32 +50,32 @@ sm_free(sm_matrix *A)
     register sm_row *prow;
 
     if (A->first_row != 0) {
-	for(prow = A->first_row; prow != 0; prow = prow->next_row) {
-	    /* add the elements to the free list of elements */
-	    prow->last_col->next_col = sm_element_freelist;
-	    sm_element_freelist = prow->first_col;
-	}
+    for(prow = A->first_row; prow != 0; prow = prow->next_row) {
+        /* add the elements to the free list of elements */
+        prow->last_col->next_col = sm_element_freelist;
+        sm_element_freelist = prow->first_col;
+    }
 
-	/* Add the linked list of rows to the row-free-list */
-	A->last_row->next_row = sm_row_freelist;
-	sm_row_freelist = A->first_row;
+    /* Add the linked list of rows to the row-free-list */
+    A->last_row->next_row = sm_row_freelist;
+    sm_row_freelist = A->first_row;
 
-	/* Add the linked list of cols to the col-free-list */
-	A->last_col->next_col = sm_col_freelist;
-	sm_col_freelist = A->first_col;
+    /* Add the linked list of cols to the col-free-list */
+    A->last_col->next_col = sm_col_freelist;
+    sm_col_freelist = A->first_col;
     }
 #else
     register sm_row *prow, *pnext_row;
     register sm_col *pcol, *pnext_col;
 
     for(prow = A->first_row; prow != 0; prow = pnext_row) {
-	pnext_row = prow->next_row;
-	sm_row_free(prow);
+    pnext_row = prow->next_row;
+    sm_row_free(prow);
     }
     for(pcol = A->first_col; pcol != 0; pcol = pnext_col) {
-	pnext_col = pcol->next_col;
-	pcol->first_row = pcol->last_row = NIL(sm_element);
-	sm_col_free(pcol);
+    pnext_col = pcol->next_col;
+    pcol->first_row = pcol->last_row = NIL(sm_element);
+    sm_col_free(pcol);
     }
 #endif
 
@@ -95,12 +95,12 @@ sm_dup(sm_matrix *A)
 
     B = sm_alloc();
     if (A->last_row != 0) {
-	sm_resize(B, A->last_row->row_num, A->last_col->col_num);
-	for(prow = A->first_row; prow != 0; prow = prow->next_row) {
-	    for(p = prow->first_col; p != 0; p = p->next_col) {
-		(void) sm_insert(B, p->row_num, p->col_num);
-	    }
-	}
+    sm_resize(B, A->last_row->row_num, A->last_col->col_num);
+    for(prow = A->first_row; prow != 0; prow = prow->next_row) {
+        for(p = prow->first_col; p != 0; p = p->next_col) {
+        (void) sm_insert(B, p->row_num, p->col_num);
+        }
+    }
     }
     return B;
 }
@@ -112,21 +112,21 @@ sm_resize(register sm_matrix *A, int row, int col)
     register int i, new_size;
 
     if (row >= A->rows_size) {
-	new_size = MAX(A->rows_size*2, row+1);
-	A->rows = REALLOC(sm_row *, A->rows, new_size);
-	for(i = A->rows_size; i < new_size; i++) {
-	    A->rows[i] = NIL(sm_row);
-	}
-	A->rows_size = new_size;
+    new_size = MAX(A->rows_size*2, row+1);
+    A->rows = REALLOC(sm_row *, A->rows, new_size);
+    for(i = A->rows_size; i < new_size; i++) {
+        A->rows[i] = NIL(sm_row);
+    }
+    A->rows_size = new_size;
     }
 
     if (col >= A->cols_size) {
-	new_size = MAX(A->cols_size*2, col+1);
-	A->cols = REALLOC(sm_col *, A->cols, new_size);
-	for(i = A->cols_size; i < new_size; i++) {
-	    A->cols[i] = NIL(sm_col);
-	}
-	A->cols_size = new_size;
+    new_size = MAX(A->cols_size*2, col+1);
+    A->cols = REALLOC(sm_col *, A->cols, new_size);
+    for(i = A->cols_size; i < new_size; i++) {
+        A->cols[i] = NIL(sm_col);
+    }
+    A->cols_size = new_size;
     }
 }
 
@@ -143,23 +143,23 @@ sm_insert(register sm_matrix *A, register int row, register int col)
     sm_element *save_element;
 
     if (row >= A->rows_size || col >= A->cols_size) {
-	sm_resize(A, row, col);
+    sm_resize(A, row, col);
     }
 
     prow = A->rows[row];
     if (prow == NIL(sm_row)) {
-	prow = A->rows[row] = sm_row_alloc();
-	prow->row_num = row;
-	sorted_insert(sm_row, A->first_row, A->last_row, A->nrows, 
-			next_row, prev_row, row_num, row, prow);
+    prow = A->rows[row] = sm_row_alloc();
+    prow->row_num = row;
+    sorted_insert(sm_row, A->first_row, A->last_row, A->nrows, 
+            next_row, prev_row, row_num, row, prow);
     }
 
     pcol = A->cols[col];
     if (pcol == NIL(sm_col)) {
-	pcol = A->cols[col] = sm_col_alloc();
-	pcol->col_num = col;
-	sorted_insert(sm_col, A->first_col, A->last_col, A->ncols, 
-			next_col, prev_col, col_num, col, pcol);
+    pcol = A->cols[col] = sm_col_alloc();
+    pcol->col_num = col;
+    sorted_insert(sm_col, A->first_col, A->last_col, A->ncols, 
+            next_col, prev_col, col_num, col, pcol);
     }
 
     /* get a new item, save its address */
@@ -168,15 +168,15 @@ sm_insert(register sm_matrix *A, register int row, register int col)
 
     /* insert it into the row list */
     sorted_insert(sm_element, prow->first_col, prow->last_col, 
-		prow->length, next_col, prev_col, col_num, col, element);
+        prow->length, next_col, prev_col, col_num, col, element);
 
     /* if it was used, also insert it into the column list */
     if (element == save_element) {
-	sorted_insert(sm_element, pcol->first_row, pcol->last_row, 
-		pcol->length, next_row, prev_row, row_num, row, element);
+    sorted_insert(sm_element, pcol->first_row, pcol->last_row, 
+        pcol->length, next_row, prev_row, row_num, row, element);
     } else {
-	/* otherwise, it was already in matrix -- free element we allocated */
-	sm_element_free(save_element);
+    /* otherwise, it was already in matrix -- free element we allocated */
+    sm_element_free(save_element);
     }
     return element;
 }
@@ -190,17 +190,17 @@ sm_find(sm_matrix *A, int rownum, int colnum)
 
     prow = sm_get_row(A, rownum);
     if (prow == NIL(sm_row)) {
-	return NIL(sm_element);
+    return NIL(sm_element);
     } else {
-	pcol = sm_get_col(A, colnum);
-	if (pcol == NIL(sm_col)) {
-	    return NIL(sm_element);
-	}
-	if (prow->length < pcol->length) {
-	    return sm_row_find(prow, colnum);
-	} else {
-	    return sm_col_find(pcol, rownum);
-	}
+    pcol = sm_get_col(A, colnum);
+    if (pcol == NIL(sm_col)) {
+        return NIL(sm_element);
+    }
+    if (prow->length < pcol->length) {
+        return sm_row_find(prow, colnum);
+    } else {
+        return sm_col_find(pcol, rownum);
+    }
     }
 }
 
@@ -224,26 +224,26 @@ sm_remove_element(register sm_matrix *A, register sm_element *p)
     /* Unlink the element from its row */
     prow = sm_get_row(A, p->row_num);
     dll_unlink(p, prow->first_col, prow->last_col, 
-			next_col, prev_col, prow->length);
+            next_col, prev_col, prow->length);
 
     /* if no more elements in the row, discard the row header */
     if (prow->first_col == NIL(sm_element)) {
-	sm_delrow(A, p->row_num);
+    sm_delrow(A, p->row_num);
     }
 
     /* Unlink the element from its column */
     pcol = sm_get_col(A, p->col_num);
     dll_unlink(p, pcol->first_row, pcol->last_row, 
-			next_row, prev_row, pcol->length);
+            next_row, prev_row, pcol->length);
 
     /* if no more elements in the column, discard the column header */
     if (pcol->first_row == NIL(sm_element)) {
-	sm_delcol(A, p->col_num);
+    sm_delcol(A, p->col_num);
     }
 
     sm_element_free(p);
 }
-
+ 
 void 
 sm_delrow(sm_matrix *A, int i)
 {
@@ -253,29 +253,29 @@ sm_delrow(sm_matrix *A, int i)
 
     prow = sm_get_row(A, i);
     if (prow != NIL(sm_row)) {
-	/* walk across the row */
-	for(p = prow->first_col; p != 0; p = pnext) {
-	    pnext = p->next_col;
+    /* walk across the row */
+    for(p = prow->first_col; p != 0; p = pnext) {
+        pnext = p->next_col;
 
-	    /* unlink the item from the column (and delete it) */
-	    pcol = sm_get_col(A, p->col_num);
-	    sm_col_remove_element(pcol, p);
+        /* unlink the item from the column (and delete it) */
+        pcol = sm_get_col(A, p->col_num);
+        sm_col_remove_element(pcol, p);
 
-	    /* discard the column if it is now empty */
-	    if (pcol->first_row == NIL(sm_element)) {
-		sm_delcol(A, pcol->col_num);
-	    }
-	}
+        /* discard the column if it is now empty */
+        if (pcol->first_row == NIL(sm_element)) {
+        sm_delcol(A, pcol->col_num);
+        }
+    }
 
-	/* discard the row -- we already threw away the elements */ 
-	A->rows[i] = NIL(sm_row);
-	dll_unlink(prow, A->first_row, A->last_row, 
-				next_row, prev_row, A->nrows);
-	prow->first_col = prow->last_col = NIL(sm_element);
-	sm_row_free(prow);
+    /* discard the row -- we already threw away the elements */ 
+    A->rows[i] = NIL(sm_row);
+    dll_unlink(prow, A->first_row, A->last_row, 
+                next_row, prev_row, A->nrows);
+    prow->first_col = prow->last_col = NIL(sm_element);
+    sm_row_free(prow);
     }
 }
-
+ 
 void 
 sm_delcol(sm_matrix *A, int i)
 {
@@ -285,36 +285,36 @@ sm_delcol(sm_matrix *A, int i)
 
     pcol = sm_get_col(A, i);
     if (pcol != NIL(sm_col)) {
-	/* walk down the column */
-	for(p = pcol->first_row; p != 0; p = pnext) {
-	    pnext = p->next_row;
+    /* walk down the column */
+    for(p = pcol->first_row; p != 0; p = pnext) {
+        pnext = p->next_row;
 
-	    /* unlink the element from the row (and delete it) */
-	    prow = sm_get_row(A, p->row_num);
-	    sm_row_remove_element(prow, p);
+        /* unlink the element from the row (and delete it) */
+        prow = sm_get_row(A, p->row_num);
+        sm_row_remove_element(prow, p);
 
-	    /* discard the row if it is now empty */
-	    if (prow->first_col == NIL(sm_element)) {
-		sm_delrow(A, prow->row_num);
-	    }
-	}
+        /* discard the row if it is now empty */
+        if (prow->first_col == NIL(sm_element)) {
+        sm_delrow(A, prow->row_num);
+        }
+    }
 
-	/* discard the column -- we already threw away the elements */ 
-	A->cols[i] = NIL(sm_col);
-	dll_unlink(pcol, A->first_col, A->last_col, 
-			    next_col, prev_col, A->ncols);
-	pcol->first_row = pcol->last_row = NIL(sm_element);
-	sm_col_free(pcol);
+    /* discard the column -- we already threw away the elements */ 
+    A->cols[i] = NIL(sm_col);
+    dll_unlink(pcol, A->first_col, A->last_col, 
+                next_col, prev_col, A->ncols);
+    pcol->first_row = pcol->last_row = NIL(sm_element);
+    sm_col_free(pcol);
     }
 }
-
+ 
 void
 sm_copy_row(register sm_matrix *dest, int dest_row, sm_row *prow)
 {
     register sm_element *p;
 
     for(p = prow->first_col; p != 0; p = p->next_col) {
-	(void) sm_insert(dest, dest_row, p->col_num);
+    (void) sm_insert(dest, dest_row, p->col_num);
     }
 }
 
@@ -325,7 +325,7 @@ sm_copy_col(register sm_matrix *dest, int dest_col, sm_col *pcol)
     register sm_element *p;
 
     for(p = pcol->first_row; p != 0; p = p->next_row) {
-	(void) sm_insert(dest, dest_col, p->row_num);
+    (void) sm_insert(dest, dest_col, p->row_num);
     }
 }
 
@@ -339,10 +339,10 @@ sm_longest_row(sm_matrix *A)
     max_length = 0;
     large_row = NIL(sm_row);
     for(prow = A->first_row; prow != 0; prow = prow->next_row) {
-	if (prow->length > max_length) {
-	    max_length = prow->length;
-	    large_row = prow;
-	}
+    if (prow->length > max_length) {
+        max_length = prow->length;
+        large_row = prow;
+    }
     }
     return large_row;
 }
@@ -357,14 +357,14 @@ sm_longest_col(sm_matrix *A)
     max_length = 0;
     large_col = NIL(sm_col);
     for(pcol = A->first_col; pcol != 0; pcol = pcol->next_col) {
-	if (pcol->length > max_length) {
-	    max_length = pcol->length;
-	    large_col = pcol;
-	}
+    if (pcol->length > max_length) {
+        max_length = pcol->length;
+        large_col = pcol;
+    }
     }
     return large_col;
 }
-
+ 
 int
 sm_num_elements(sm_matrix *A)
 {
@@ -373,11 +373,11 @@ sm_num_elements(sm_matrix *A)
 
     num = 0;
     sm_foreach_row(A, prow) {
-	num += prow->length;
+    num += prow->length;
     }
     return num;
 }
-
+ 
 int 
 sm_read(FILE *fp, sm_matrix **A)
 {
@@ -385,13 +385,13 @@ sm_read(FILE *fp, sm_matrix **A)
 
     *A = sm_alloc();
     while (! feof(fp)) {
-	err = fscanf(fp, "%d %d", &i, &j);
-	if (err == EOF) {
-	    return 1;
-	} else if (err != 2) {
-	    return 0;
-	}
-	(void) sm_insert(*A, i, j);
+    err = fscanf(fp, "%d %d", &i, &j);
+    if (err == EOF) {
+        return 1;
+    } else if (err != 2) {
+        return 0;
+    }
+    (void) sm_insert(*A, i, j);
     }
     return 1;
 }
@@ -405,24 +405,24 @@ sm_read_compressed(FILE *fp, sm_matrix **A)
 
     *A = sm_alloc();
     if (fscanf(fp, "%d %d", &nrows, &ncols) != 2) {
-	return 0;
+    return 0;
     }
     sm_resize(*A, nrows, ncols);
 
     for(i = 0; i < nrows; i++) {
-	if (fscanf(fp, "%lx", &x) != 1) {
-	    return 0;
-	}
-	for(j = 0; j < ncols; j += 32) {
-	    if (fscanf(fp, "%lx", &x) != 1) {
-		return 0;
-	    }
-	    for(k = j; x != 0; x >>= 1, k++) {
-		if (x & 1) {
-		    (void) sm_insert(*A, i, k);
-		}
-	    }
-	}
+    if (fscanf(fp, "%lx", &x) != 1) {
+        return 0;
+    }
+    for(j = 0; j < ncols; j += 32) {
+        if (fscanf(fp, "%lx", &x) != 1) {
+        return 0;
+        }
+        for(k = j; x != 0; x >>= 1, k++) {
+        if (x & 1) {
+            (void) sm_insert(*A, i, k);
+        }
+        }
+    }
     }
     return 1;
 }
@@ -435,12 +435,12 @@ sm_write(FILE *fp, sm_matrix *A)
     register sm_element *p;
 
     for(prow = A->first_row; prow != 0; prow = prow->next_row) {
-	for(p = prow->first_col; p != 0; p = p->next_col) {
-	    (void) fprintf(fp, "%d %d\n", p->row_num, p->col_num);
-	}
+    for(p = prow->first_col; p != 0; p = p->next_col) {
+        (void) fprintf(fp, "%d %d\n", p->row_num, p->col_num);
+    }
     }
 }
-
+ 
 void 
 sm_print(FILE *fp, sm_matrix *A)
 {
@@ -449,41 +449,41 @@ sm_print(FILE *fp, sm_matrix *A)
     int c;
 
     if (A->last_col->col_num >= 100) {
-	(void) fprintf(fp, "    ");
-	for(pcol = A->first_col; pcol != 0; pcol = pcol->next_col) {
-	    (void) fprintf(fp, "%d", (pcol->col_num / 100)%10);
-	}
-	putc('\n', fp);
+    (void) fprintf(fp, "    ");
+    for(pcol = A->first_col; pcol != 0; pcol = pcol->next_col) {
+        (void) fprintf(fp, "%d", (pcol->col_num / 100)%10);
+    }
+    putc('\n', fp);
     }
 
     if (A->last_col->col_num >= 10) {
-	(void) fprintf(fp, "    ");
-	for(pcol = A->first_col; pcol != 0; pcol = pcol->next_col) {
-	    (void) fprintf(fp, "%d", (pcol->col_num / 10)%10);
-	}
-	putc('\n', fp);
+    (void) fprintf(fp, "    ");
+    for(pcol = A->first_col; pcol != 0; pcol = pcol->next_col) {
+        (void) fprintf(fp, "%d", (pcol->col_num / 10)%10);
+    }
+    putc('\n', fp);
     }
 
     (void) fprintf(fp, "    ");
     for(pcol = A->first_col; pcol != 0; pcol = pcol->next_col) {
-	(void) fprintf(fp, "%d", pcol->col_num % 10);
+    (void) fprintf(fp, "%d", pcol->col_num % 10);
     }
     putc('\n', fp);
 
     (void) fprintf(fp, "    ");
     for(pcol = A->first_col; pcol != 0; pcol = pcol->next_col) {
-	(void) fprintf(fp, "-");
+    (void) fprintf(fp, "-");
     }
     putc('\n', fp);
 
     for(prow = A->first_row; prow != 0; prow = prow->next_row) {
-	(void) fprintf(fp, "%3d:", prow->row_num);
+    (void) fprintf(fp, "%3d:", prow->row_num);
 
-	for(pcol = A->first_col; pcol != 0; pcol = pcol->next_col) {
-	    c = sm_row_find(prow, pcol->col_num) ? '1' : '.';
-	    putc(c, fp);
-	}
-	putc('\n', fp);
+    for(pcol = A->first_col; pcol != 0; pcol = pcol->next_col) {
+        c = sm_row_find(prow, pcol->col_num) ? '1' : '.';
+        putc(c, fp);
+    }
+    putc('\n', fp);
     }
 }
 
@@ -495,10 +495,10 @@ sm_dump(sm_matrix *A, char *s, int max)
 
     (void) fprintf(fp, "%s %d rows by %d cols\n", s, A->nrows, A->ncols);
     if (A->nrows < max) {
-	sm_print(fp, A);
+    sm_print(fp, A);
     }
 }
-
+ 
 void
 sm_cleanup(void)
 {
@@ -508,20 +508,20 @@ sm_cleanup(void)
     register sm_col *pcol, *pnextcol;
 
     for(p = sm_element_freelist; p != 0; p = pnext) {
-	pnext = p->next_col;
-	FREE(p);
+    pnext = p->next_col;
+    FREE(p);
     }
     sm_element_freelist = 0;
 
     for(prow = sm_row_freelist; prow != 0; prow = pnextrow) {
-	pnextrow = prow->next_row;
-	FREE(prow);
+    pnextrow = prow->next_row;
+    FREE(prow);
     }
     sm_row_freelist = 0;
 
     for(pcol = sm_col_freelist; pcol != 0; pcol = pnextcol) {
-	pnextcol = pcol->next_col;
-	FREE(pcol);
+    pnextcol = pcol->next_col;
+    FREE(pcol);
     }
     sm_col_freelist = 0;
 #endif

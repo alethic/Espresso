@@ -10,11 +10,11 @@ pset minterms(pset_family T)
 
     size = 1;
     for(var = 0; var < cube.num_vars; var++)
-	size *= cube.part_size[var];
+    size *= cube.part_size[var];
     Gminterm = set_new(size);
 
     foreach_set(T, last, Gcube)
-	explode(cube.num_vars-1, 0);
+    explode(cube.num_vars-1, 0);
 
     return Gminterm;
 }
@@ -24,13 +24,13 @@ void explode(int var, int z)
 {
     int i, last = cube.last_part[var];
     for(i=cube.first_part[var], z *= cube.part_size[var]; i<=last; i++, z++)
-	if (is_in_set(Gcube, i))
-	{
-	    if (var == 0)
-		set_insert(Gminterm, z);
-	    else
-		explode(var-1, z);
-	}
+    if (is_in_set(Gcube, i))
+    {
+        if (var == 0)
+        set_insert(Gminterm, z);
+        else
+        explode(var-1, z);
+    }
 }
 
 
@@ -71,35 +71,35 @@ void map(pset_family T)
     numout = cube.part_size[cube.num_vars-1];
 
     for(outnum = 0; outnum < numout; outnum++) {
-	output_offset = outnum * largest_input_ind;
-	printf("\n\nOutput space # %d\n", outnum);
-	for(l = 0; l <= MAX(cube.num_binary_vars - 8, 0); l++) {
-	    other_input_offset = l * 256;
-	    for(k = 0; k < 16; k++) {
-		some_output = FALSE;
-		for(j = 0; j < 16; j++) {
-		    ind = mapindex[k][j] + other_input_offset;
-		    if (ind < largest_input_ind) {
-			c = is_in_set(m, ind+output_offset) ? '1' : '.';
-			putchar(c);
-			some_output = TRUE;
-		    }
-		    if ((j+1)%4 == 0)
-			putchar(' ');
-		    if ((j+1)%8 == 0)
-			printf("  ");
-		}
-		if (some_output)
-		    putchar('\n');
-		if ((k+1)%4 == 0) {
-		    if (k != 15 && mapindex[k+1][0] >= largest_input_ind)
-			break;
-		    putchar('\n');
-		}
-		if ((k+1)%8 == 0)
-		    putchar('\n');
-	    }
-	}
+    output_offset = outnum * largest_input_ind;
+    printf("\n\nOutput space # %d\n", outnum);
+    for(l = 0; l <= MAX(cube.num_binary_vars - 8, 0); l++) {
+        other_input_offset = l * 256;
+        for(k = 0; k < 16; k++) {
+        some_output = FALSE;
+        for(j = 0; j < 16; j++) {
+            ind = mapindex[k][j] + other_input_offset;
+            if (ind < largest_input_ind) {
+            c = is_in_set(m, ind+output_offset) ? '1' : '.';
+            putchar(c);
+            some_output = TRUE;
+            }
+            if ((j+1)%4 == 0)
+            putchar(' ');
+            if ((j+1)%8 == 0)
+            printf("  ");
+        }
+        if (some_output)
+            putchar('\n');
+        if ((k+1)%4 == 0) {
+            if (k != 15 && mapindex[k+1][0] >= largest_input_ind)
+            break;
+            putchar('\n');
+        }
+        if ((k+1)%8 == 0)
+            putchar('\n');
+        }
+    }
     }
     set_free(m);
 }

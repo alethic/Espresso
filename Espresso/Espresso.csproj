@@ -1,0 +1,46 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <RuntimeIdentifiers>win-x86;win-x64</RuntimeIdentifiers>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <LibProjectReference Include="../EspressoLib/EspressoLib.vcxproj">
+      <Name>Espresso32</Name>
+      <Platform>Win32</Platform>
+      <Configuration>$(Configuration)</Configuration>
+      <OutputDir>native\win-x86</OutputDir>
+    </LibProjectReference>
+    <LibProjectReference Include="../EspressoLib/EspressoLib.vcxproj">
+      <Name>Espresso64</Name>
+      <Platform>x64</Platform>
+      <Configuration>$(Configuration)</Configuration>
+      <OutputDir>native\win-x64</OutputDir>
+    </LibProjectReference>
+  </ItemGroup>
+
+  <Target Name="GetLibTargets">
+    <Message Text="GetLibTargets" Importance="high" />
+    <MSBuild Projects="@(LibProjectReference)" Targets="GetTargetPath" Properties="Platform=%(LibProjectReference.Platform);Configuration=%(LibProjectReference.Configuration)">
+      <Output TaskParameter="TargetOutputs" ItemName="LibTargets" />
+    </MSBuild>
+    <Message Text="GetLibTargets: @(LibTargets)" Importance="high" />
+    <ItemGroup>
+      <ContentWithTargetPath Include="@(LibTargets)">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        <TargetPath>%(OutputDir)\%(Filename)%(Extension)</TargetPath>
+      </ContentWithTargetPath>
+    </ItemGroup>
+    <Message Text="ContentWithTargetPath: @(ContentWithTargetPath)" Importance="high" />
+  </Target>
+
+  <Target Name="BuildLib" BeforeTargets="Compile" DependsOnTargets="GetLibTargets" Inputs="@(LibProjectReference)" Outputs="@(LibTargets)">
+    <Message Text="BuildLib: %(LibProjectReference.Name)" Importance="high" />
+    <MSBuild Projects="@(LibProjectReference)" Targets="Build" Properties="Platform=%(LibProjectReference.Platform);Configuration=Debug">
+      <Output TaskParameter="TargetOutputs" ItemName="LibOutputs" />
+    </MSBuild>
+    <Message Text="BuildLib: @(LibTargets)" Importance="high" />
+  </Target>
+
+</Project>
