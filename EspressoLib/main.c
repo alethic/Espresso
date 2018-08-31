@@ -35,7 +35,12 @@ void runtime(void);
 void usage(void);
 bool check_arg(int *argc, register char **argv, register char *s);
 
-int main(int argc, char **argv)
+extern __declspec(dllexport) int main(int argc, char **argv)
+{
+    return main2(argc, argv);
+}
+
+int main2(int argc, char **argv)
 {
     int i, j, first, last, strategy, out_type, option;
     pPLA PLA, PLA1;

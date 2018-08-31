@@ -2,7 +2,6 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <RuntimeIdentifiers>win-x86;win-x64</RuntimeIdentifiers>
   </PropertyGroup>
 
   <ItemGroup>
@@ -20,6 +19,11 @@
     </LibProjectReference>
   </ItemGroup>
 
+  <ItemGroup>
+    <PackageReference Include="System.Runtime.InteropServices" Version="4.3.0" />
+    <PackageReference Include="System.Runtime.InteropServices.RuntimeInformation" Version="4.3.0" />
+  </ItemGroup>
+
   <Target Name="GetLibTargets">
     <Message Text="GetLibTargets" Importance="high" />
     <MSBuild Projects="@(LibProjectReference)" Targets="GetTargetPath" Properties="Platform=%(LibProjectReference.Platform);Configuration=%(LibProjectReference.Configuration)">
@@ -32,10 +36,9 @@
         <TargetPath>%(OutputDir)\%(Filename)%(Extension)</TargetPath>
       </ContentWithTargetPath>
     </ItemGroup>
-    <Message Text="ContentWithTargetPath: @(ContentWithTargetPath)" Importance="high" />
   </Target>
 
-  <Target Name="BuildLib" BeforeTargets="Compile" DependsOnTargets="GetLibTargets" Inputs="@(LibProjectReference)" Outputs="@(LibTargets)">
+  <Target Name="BuildLib" BeforeTargets="Compile" DependsOnTargets="GetLibTargets" Inputs="@(LibProjectReference)" Outputs="UNKNOWN">
     <Message Text="BuildLib: %(LibProjectReference.Name)" Importance="high" />
     <MSBuild Projects="@(LibProjectReference)" Targets="Build" Properties="Platform=%(LibProjectReference.Platform);Configuration=Debug">
       <Output TaskParameter="TargetOutputs" ItemName="LibOutputs" />
