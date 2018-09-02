@@ -12,6 +12,12 @@ namespace Espresso
 
         }
 
+        public EspressoException(string message) :
+            base(message)
+        {
+
+        }
+
     }
 
 }

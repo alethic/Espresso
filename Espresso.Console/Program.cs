@@ -1,4 +1,6 @@
-﻿namespace Espresso.Console
+﻿using System.IO;
+
+namespace Espresso.Console
 {
 
     public static class Program
@@ -6,14 +8,16 @@
 
         public static void Main(string[] args)
         {
-            var cover = EspressoNet.CreateCover(1, 2, 1);
-            cover.Inputs[0, 0] = 2;
-            cover.Inputs[0, 1] = 2;
-            cover.Output[0, 0] = 1;
-            cover = EspressoNet.Espresso(cover);
-
+            var pla = PLA.Parse(new StreamReader(File.OpenRead(@"C:\dev\Espresso\tlex\alu4.pla")));
+            pla.WriteTo(System.Console.Out);
+            System.Console.WriteLine("Cubes: {0}", pla.Cover.Count);
+            System.Console.WriteLine("press enter to process...");
             System.Console.ReadLine();
-            System.GC.Collect();
+
+            var rst = EspressoNet.Espresso(pla.Cover, pla.CoverType != EspressoCoverType.None ? pla.CoverType : EspressoCoverType.F_TYPE | EspressoCoverType.D_TYPE);
+            pla = new PLA(rst);
+            pla.WriteTo(System.Console.Out);
+            System.Console.WriteLine("Cubes: {0}", pla.Cover.Count);
             System.Console.ReadLine();
         }
 
