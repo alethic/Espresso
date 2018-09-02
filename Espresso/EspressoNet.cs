@@ -53,6 +53,11 @@ namespace Espresso
                 throw new ArgumentException(nameof(cover));
             if (cover.Output.Count < 1)
                 throw new ArgumentException(nameof(cover));
+
+            // default value for none type
+            if (type == EspressoCoverType.None)
+                type = EspressoCoverType.F_TYPE | EspressoCoverType.D_TYPE;
+
             if (!type.HasFlag(EspressoCoverType.F_TYPE) &&
                 !type.HasFlag(EspressoCoverType.R_TYPE))
                 throw new ArgumentOutOfRangeException(nameof(type), "Expected type in [F, R, FD, FR, DR, FDR].");

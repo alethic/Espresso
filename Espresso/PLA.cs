@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Text.RegularExpressions;
 
 namespace Espresso
@@ -230,6 +231,19 @@ namespace Espresso
             }
 
             writer.WriteLine(".e");
+        }
+
+        /// <summary>
+        /// Returns the PLA file in text format.
+        /// </summary>
+        /// <returns></returns>
+        public override string ToString()
+        {
+            using (var b = new StringWriter())
+            {
+                WriteTo(b);
+                return b.ToString();
+            }
         }
 
     }
