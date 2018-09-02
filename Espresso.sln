@@ -6,9 +6,6 @@ MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "EspressoLib", "EspressoLib\EspressoLib.vcxproj", "{EFE14E12-FCFE-4B59-846B-943F5432C511}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Espresso", "Espresso\Espresso.csproj", "{EB0B2FCA-2FD6-48F4-B4C8-2BC2D1A58851}"
-	ProjectSection(ProjectDependencies) = postProject
-		{EFE14E12-FCFE-4B59-846B-943F5432C511} = {EFE14E12-FCFE-4B59-846B-943F5432C511}
-	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Espresso.Console", "Espresso.Console\Espresso.Console.csproj", "{5442BFE8-1AB9-4DDC-82DC-9CD765B5E7C7}"
 EndProject

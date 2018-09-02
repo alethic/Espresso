@@ -1,29 +1,30 @@
+// Filename: primes.c
+
 #include "espresso.h"
 
-static bool primes_consensus_special_cases(pset *T, pset_family *Tnew);
-static pcover primes_consensus_merge(pset_family Tl, pset_family Tr, pset cl, pset cr);
-static pcover and_with_cofactor(pset_family A, register pset cof);
+static bool primes_consensus_special_cases(set **T, set_family_t **Tnew);
+static set_family_t *primes_consensus_merge(set_family_t *Tl, set_family_t *Tr, set *cl, set *cr);
+static set_family_t *and_with_cofactor(set_family_t *A, set *cof);
 
-
-/* primes_consensus -- generate primes using consensus */
-pcover primes_consensus(pset *T)
-/* T will be disposed of */
+// primes_consensus -- generate primes using consensus
+set_family_t *
+primes_consensus(set **T)
 {
-    register pcube cl, cr;
-    register int best;
-    pcover Tnew, Tl, Tr;
+    set *cl, *cr;
+    int best;
+    set_family_t *Tnew, *Tl, *Tr;
 
     if (primes_consensus_special_cases(T, &Tnew) == MAYBE) {
-        cl = new_cube();
-        cr = new_cube();
+        cl = set_new(CUBE.size);
+        cr = set_new(CUBE.size);
         best = binate_split_select(T, cl, cr, COMPL);
 
         Tl = primes_consensus(scofactor(T, cl, best));
         Tr = primes_consensus(scofactor(T, cr, best));
         Tnew = primes_consensus_merge(Tl, Tr, cl, cr);
 
-        free_cube(cl);
-        free_cube(cr);
+        set_free(cl);
+        set_free(cr);
         free_cubelist(T);
     }
 
@@ -31,51 +32,49 @@ pcover primes_consensus(pset *T)
 }
 
 static bool
-primes_consensus_special_cases(pset *T, pset_family *Tnew)
-/* will be disposed if answer is determined */
-    /* returned only if answer determined */
+primes_consensus_special_cases(set **T, set_family_t **Tnew)
 {
-    register pcube *T1, p, ceil, cof = T[0];
-    pcube last;
-    pcover A;
+    set **T1, *p, *ceil, *cof=T[0];
+    set *last;
+    set_family_t *A;
 
-    /* Check for no cubes in the cover */
+    // Check for no cubes in the cover
     if (T[2] == NULL) {
-        *Tnew = new_cover(0);
+        *Tnew = sf_new(0, CUBE.size);
         free_cubelist(T);
         return TRUE;
     }
 
-    /* Check for only a single cube in the cover */
+    // Check for only a single cube in the cover
     if (T[3] == NULL) {
-        *Tnew = sf_addset(new_cover(1), set_or(cof, cof, T[2]));
+        *Tnew = sf_addset(sf_new(1, CUBE.size), set_or(cof, cof, T[2]));
         free_cubelist(T);
         return TRUE;
     }
 
-    /* Check for a row of all 1's (implies function is a tautology) */
-    for (T1 = T + 2; (p = *T1++) != NULL; ) {
+    // Check for a row of all 1's (implies function is a tautology)
+    for (T1 = T+2; (p = *T1++) != NULL; ) {
         if (full_row(p, cof)) {
-            *Tnew = sf_addset(new_cover(1), cube.fullset);
+            *Tnew = sf_addset(sf_new(1, CUBE.size), CUBE.fullset);
             free_cubelist(T);
             return TRUE;
         }
     }
 
-    /* Check for a column of all 0's which can be factored out */
+    // Check for a column of all 0's which can be factored out
     ceil = set_save(cof);
-    for (T1 = T + 2; (p = *T1++) != NULL; ) {
-        INLINEset_or(ceil, ceil, p);
+    for (T1 = T+2; (p = *T1++) != NULL; ) {
+        set_or(ceil, ceil, p);
     }
-    if (!setp_equal(ceil, cube.fullset)) {
-        p = new_cube();
-        (void)set_diff(p, cube.fullset, ceil);
-        (void)set_or(cof, cof, p);
-        free_cube(p);
+    if (! setp_equal(ceil, CUBE.fullset)) {
+        p = set_new(CUBE.size);
+        set_diff(p, CUBE.fullset, ceil);
+        set_or(cof, cof, p);
+        set_free(p);
 
         A = primes_consensus(T);
         foreach_set(A, last, p) {
-            INLINEset_and(p, p, ceil);
+            set_and(p, p, ceil);
         }
         *Tnew = A;
         set_free(ceil);
@@ -83,35 +82,33 @@ primes_consensus_special_cases(pset *T, pset_family *Tnew)
     }
     set_free(ceil);
 
-    /* Collect column counts, determine unate variables, etc. */
+    // Collect column counts, determine unate variables, etc.
     massive_count(T);
 
-    /* If single active variable not factored out above, then tautology ! */
-    if (cdata.vars_active == 1) {
-        *Tnew = sf_addset(new_cover(1), cube.fullset);
+    // If single active variable not factored out above, then tautology!
+    if (CDATA.vars_active == 1) {
+        *Tnew = sf_addset(sf_new(1, CUBE.size), CUBE.fullset);
         free_cubelist(T);
         return TRUE;
-
-        /* Check for unate cover */
     }
-    else if (cdata.vars_unate == cdata.vars_active) {
+    // Check for unate cover
+    else if (CDATA.vars_unate == CDATA.vars_active) {
         A = cubeunlist(T);
         *Tnew = sf_contain(A);
         free_cubelist(T);
         return TRUE;
-
-        /* Not much we can do about it */
     }
+    // Not much we can do about it
     else {
         return MAYBE;
     }
 }
 
-static pcover
-primes_consensus_merge(pset_family Tl, pset_family Tr, pset cl, pset cr)
+static set_family_t *
+primes_consensus_merge(set_family_t *Tl, set_family_t *Tr, set *cl, set *cr)
 {
-    register pcube pl, pr, lastl, lastr, pt;
-    pcover T, Tsave;
+    set *pl, *pr, *lastl, *lastr, *pt;
+    set_family_t *T, *Tsave;
 
     Tl = and_with_cofactor(Tl, cl);
     Tr = and_with_cofactor(Tr, cr);
@@ -135,22 +132,21 @@ primes_consensus_merge(pset_family Tl, pset_family Tr, pset cl, pset cr)
             }
         }
     }
-    free_cover(Tl);
-    free_cover(Tr);
+    sf_free(Tl);
+    sf_free(Tr);
 
     Tsave = sf_union(Tsave, sf_contain(T));
     return Tsave;
 }
 
-
-static pcover
-and_with_cofactor(pset_family A, register pset cof)
+static set_family_t *
+and_with_cofactor(set_family_t *A, set *cof)
 {
-    register pset last, p;
+    set *last, *p;
 
     foreach_set(A, last, p) {
-        INLINEset_and(p, p, cof);
-        if (cdist(p, cube.fullset) > 0) {
+        set_and(p, p, cof);
+        if (cdist(p, CUBE.fullset) > 0) {
             RESET(p, ACTIVE);
         }
         else {
@@ -159,3 +155,4 @@ and_with_cofactor(pset_family A, register pset cof)
     }
     return sf_inactive(A);
 }
+

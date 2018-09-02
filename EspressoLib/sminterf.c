@@ -1,22 +1,23 @@
+// Filename: sminterf.c
+
 #include "espresso.h"
 
-
-pset
-do_sm_minimum_cover(pset_family A)
+set *
+do_sm_minimum_cover(set_family_t *A)
 {
     sm_matrix *M;
     sm_row *sparse_cover;
     sm_element *pe;
-    pset cover;
-    register int i, base, rownum;
-    register unsigned val;
-    register pset last, p;
+    set *cover;
+    int i, base, rownum;
+    unsigned val;
+    set *last, *p;
 
     M = sm_alloc();
     rownum = 0;
     foreach_set(A, last, p) {
         foreach_set_element(p, i, val, base) {
-            (void)sm_insert(M, rownum, base);
+            sm_insert(M, rownum, base);
         }
         rownum++;
     }
@@ -32,3 +33,4 @@ do_sm_minimum_cover(pset_family A)
 
     return cover;
 }
+

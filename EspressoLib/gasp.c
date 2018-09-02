@@ -1,43 +1,44 @@
-/*
-    module: gasp.c
-
-    The "last_gasp" heuristic computes the reduction of each cube in
-    the cover (without replacement) and then performs an expansion of
-    these cubes.  The cubes which expand to cover some other cube are
-    added to the original cover and irredundant finds a minimal subset.
-
-    If one of the reduced cubes expands to cover some other reduced
-    cube, then the new prime thus generated is a candidate for reducing
-    the size of the cover.
-
-    super_gasp is a variation on this strategy which extracts a minimal
-    subset from the set of all prime implicants which cover all
-    maximally reduced cubes.
-*/
+//
+// module: gasp.c
+//
+// The "last_gasp" heuristic computes the reduction of each cube in
+// the cover (without replacement) and then performs an expansion of
+// these cubes.  The cubes which expand to cover some other cube are
+// added to the original cover and irredundant finds a minimal subset.
+//
+// If one of the reduced cubes expands to cover some other reduced
+// cube, then the new prime thus generated is a candidate for reducing
+// the size of the cover.
+//
+// super_gasp is a variation on this strategy which extracts a minimal
+// subset from the set of all prime implicants which cover all
+// maximally reduced cubes.
+//
 
 #include "espresso.h"
 
+//
+// reduce_gasp -- compute the maximal reduction of each cube of F
+//
+// If a cube does not reduce, it remains prime; otherwise, it is marked
+// as nonprime.   If the cube is redundant (should NEVER happen here) we
+// just crap out ...
+//
+// A cover with all of the cubes of F is returned.  Those that did
+// reduce are marked "NONPRIME"; those that reduced are marked "PRIME".
+// The cubes are in the same order as in F.
+//
 
-/*
- *  reduce_gasp -- compute the maximal reduction of each cube of F
- *
- *  If a cube does not reduce, it remains prime; otherwise, it is marked
- *  as nonprime.   If the cube is redundant (should NEVER happen here) we
- *  just crap out ...
- *
- *  A cover with all of the cubes of F is returned.  Those that did
- *  reduce are marked "NONPRIME"; those that reduced are marked "PRIME".
- *  The cubes are in the same order as in F.
- */
-static pcover reduce_gasp(pset_family F, pset_family D)
+static set_family_t *
+reduce_gasp(set_family_t *F, set_family_t *D)
 {
-    pcube p, last, cunder, *FD;
-    pcover G;
+    set *p, *last, *cunder, **FD;
+    set_family_t *G;
 
-    G = new_cover(F->count);
+    G = sf_new(F->count, CUBE.size);
     FD = cube2list(F, D);
 
-    /* Reduce cubes of F without replacement */
+    // Reduce cubes of F without replacement
     foreach_set(F, last, p) {
         cunder = reduce_cube(FD, p);
         if (setp_empty(cunder)) {
@@ -54,68 +55,69 @@ static pcover reduce_gasp(pset_family F, pset_family D)
         if (debug & GASP) {
             printf("REDUCE_GASP: %s reduced to %s\n", pc1(p), pc2(cunder));
         }
-        free_cube(cunder);
+        set_free(cunder);
     }
 
     free_cubelist(FD);
     return G;
 }
 
-/*
- *  expand_gasp -- expand each nonprime cube of F into a prime implicant
- *
- *  The gasp strategy differs in that only those cubes which expand to
- *  cover some other cube are saved; also, all cubes are expanded
- *  regardless of whether they become covered or not.
- */
+//
+// expand_gasp -- expand each nonprime cube of F into a prime implicant
+//
+// The gasp strategy differs in that only those cubes which expand to
+// cover some other cube are saved; also, all cubes are expanded
+// regardless of whether they become covered or not.
+//
 
-pcover expand_gasp(pset_family F, pset_family D, pset_family R, pset_family Foriginal)
+set_family_t *
+expand_gasp(set_family_t *F, set_family_t *D, set_family_t *R, set_family_t *Foriginal)
 {
     int c1index;
-    pcover G;
+    set_family_t *G;
 
-    /* Try to expand each nonprime and noncovered cube */
-    G = new_cover(10);
+    // Try to expand each nonprime and noncovered cube
+    G = sf_new(10, CUBE.size);
     for (c1index = 0; c1index < F->count; c1index++) {
         expand1_gasp(F, D, R, Foriginal, c1index, &G);
     }
     G = sf_dupl(G);
-    G = expand(G, R, /*nonsparse*/ FALSE);	/* Make them prime ! */
+    G = expand(G, R, /*nonsparse*/ FALSE); /* Make them prime ! */
+
     return G;
 }
 
+//
+// expand1 -- Expand a single cube against the OFF-set, using the gasp strategy
+//
 
-
-/*
- *  expand1 -- Expand a single cube against the OFF-set, using the gasp strategy
- */
-void expand1_gasp(pset_family F, pset_family D, pset_family R, pset_family Foriginal, int c1index, pset_family *G)
+void
+expand1_gasp(set_family_t *F, set_family_t *D, set_family_t *R, set_family_t *Foriginal, int c1index, set_family_t **G)
 /* reduced cubes of ON-set */
 /* DC-set */
 /* OFF-set */
-    /* ON-set before reduction (same order as F) */
-    /* which index of F (or Freduced) to be checked */
-
+/* ON-set before reduction (same order as F) */
+/* which index of F (or Freduced) to be checked */
 {
-    register int c2index;
-    register pcube p, last, c2under;
-    pcube RAISE, FREESET, temp, *FD, c2essential;
-    pcover F1;
+    int c2index;
+    set *p, *last, *c2under;
+    set *RAISE, *FREESET, *temp, **FD, *c2essential;
+    set_family_t *F1;
 
     if (debug & EXPAND1) {
         printf("\nEXPAND1_GASP:    \t%s\n", pc1(GETSET(F, c1index)));
     }
 
-    RAISE = new_cube();
-    FREESET = new_cube();
-    temp = new_cube();
+    RAISE = set_new(CUBE.size);
+    FREESET = set_new(CUBE.size);
+    temp = set_new(CUBE.size);
 
-    /* Initialize the OFF-set */
+    // Initialize the OFF-set
     R->active_count = R->count;
     foreach_set(R, last, p) {
         SET(p, ACTIVE);
     }
-    /* Initialize the reduced ON-set, all nonprime cubes become active */
+    // Initialize the reduced ON-set, all nonprime cubes become active
     F->active_count = F->count;
     foreachi_set(F, c2index, c2under) {
         if (c1index == c2index || TESTP(c2under, PRIME)) {
@@ -127,40 +129,39 @@ void expand1_gasp(pset_family F, pset_family D, pset_family R, pset_family Forig
         }
     }
 
-    /* Initialize the raising and unassigned sets */
-    (void)set_copy(RAISE, GETSET(F, c1index));
-    (void)set_diff(FREESET, cube.fullset, RAISE);
+    // Initialize the raising and unassigned sets
+    set_copy(RAISE, GETSET(F, c1index));
+    set_diff(FREESET, CUBE.fullset, RAISE);
 
-    /* Determine parts which must be lowered */
+    // Determine parts which must be lowered
     essen_parts(R, F, RAISE, FREESET);
 
-    /* Determine parts which can always be raised */
+    // Determine parts which can always be raised
     essen_raising(R, RAISE, FREESET);
 
-    /* See which, if any, of the reduced cubes we can cover */
+    // See which, if any, of the reduced cubes we can cover
     foreachi_set(F, c2index, c2under) {
         if (TESTP(c2under, ACTIVE)) {
-            /* See if this cube can be covered by an expansion */
+            // See if this cube can be covered by an expansion
             if (setp_implies(c2under, RAISE) ||
                 feasibly_covered(R, c2under, RAISE, temp)) {
 
-                /* See if c1under can expanded to cover c2 reduced against
-                 * (F - c1) u c1under; if so, c2 can definitely be removed !
-                 */
+                // See if c1under can expanded to cover c2 reduced against
+                // (F - c1) u c1under; if so, c2 can definitely be removed !
 
-                 /* Copy F and replace c1 with c1under */
+                // Copy F and replace c1 with c1under
                 F1 = sf_save(Foriginal);
-                (void)set_copy(GETSET(F1, c1index), GETSET(F, c1index));
+                set_copy(GETSET(F1, c1index), GETSET(F, c1index));
 
-                /* Reduce c2 against ((F - c1) u c1under) */
+                // Reduce c2 against ((F - c1) u c1under)
                 FD = cube2list(F1, D);
                 c2essential = reduce_cube(FD, GETSET(F1, c2index));
                 free_cubelist(FD);
                 sf_free(F1);
 
-                /* See if c2essential is covered by an expansion of c1under */
+                // See if c2essential is covered by an expansion of c1under
                 if (feasibly_covered(R, c2essential, RAISE, temp)) {
-                    (void)set_or(temp, RAISE, c2essential);
+                    set_or(temp, RAISE, c2essential);
                     RESET(temp, PRIME);		/* cube not prime */
                     *G = sf_addset(*G, temp);
                 }
@@ -169,45 +170,57 @@ void expand1_gasp(pset_family F, pset_family D, pset_family R, pset_family Forig
         }
     }
 
-    free_cube(RAISE);
-    free_cube(FREESET);
-    free_cube(temp);
+    set_free(RAISE);
+    set_free(FREESET);
+    set_free(temp);
 }
 
-/* irred_gasp -- Add new primes to F and find an irredundant subset */
-pcover irred_gasp(pset_family F, pset_family D, pset_family G)
-/* G is disposed of */
+// irred_gasp -- Add new primes to F and find an irredundant subset
+
+set_family_t *
+irred_gasp(set_family_t *F, set_family_t *D, set_family_t *G)
 {
     if (G->count != 0)
         F = irredundant(sf_append(F, G), D);
     else
-        free_cover(G);
+        sf_free(G);
+
     return F;
 }
 
+// last_gasp
 
-/* last_gasp */
-pcover last_gasp(pset_family F, pset_family D, pset_family R, cost_t *cost)
+set_family_t *
+last_gasp(set_family_t *F, set_family_t *D, set_family_t *R, cost_t *cost)
 {
-    pcover G, G1;
+    set_family_t *G, *G1;
 
-    EXECUTE(G = reduce_gasp(F, D), GREDUCE_TIME, G, *cost);
-    EXECUTE(G1 = expand_gasp(G, D, R, F), GEXPAND_TIME, G1, *cost);
-    free_cover(G);
-    EXECUTE(F = irred_gasp(F, D, G1), GIRRED_TIME, F, *cost);
+    G = reduce_gasp(F, D);
+    cover_cost(G, cost);
+    G1 = expand_gasp(G, D, R, F);
+    cover_cost(G1, cost);
+    sf_free(G);
+    F = irred_gasp(F, D, G1);
+    cover_cost(F, cost);
+
     return F;
 }
 
-
-/* super_gasp */
-pcover super_gasp(pset_family F, pset_family D, pset_family R, cost_t *cost)
+// super_gasp
+set_family_t *
+super_gasp(set_family_t *F, set_family_t *D, set_family_t *R, cost_t *cost)
 {
-    pcover G, G1;
+    set_family_t *G, *G1;
 
-    EXECUTE(G = reduce_gasp(F, D), GREDUCE_TIME, G, *cost);
-    EXECUTE(G1 = all_primes(G, R), GEXPAND_TIME, G1, *cost);
-    free_cover(G);
-    EXEC(G = sf_dupl(sf_append(F, G1)), "NEWPRIMES", G);
-    EXECUTE(F = irredundant(G, D), IRRED_TIME, F, *cost);
+    G = reduce_gasp(F, D);
+    cover_cost(G, cost);
+    G1 = all_primes(G, R);
+    cover_cost(G1, cost);
+    sf_free(G);
+    G = sf_dupl(sf_append(F, G1));
+    F = irredundant(G, D);
+    cover_cost(F, cost);
+
     return F;
 }
+

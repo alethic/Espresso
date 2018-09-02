@@ -2,6 +2,12 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <Authors>Jerome Haltom, Robert Brayton</Authors>
+    <Description>The Espresso logic minimizer is a computer program using heuristic and specific algorithms for efficiently reducing the complexity of digital electronic gate circuits. Espresso was developed at IBM by Robert Brayton. This package contains a modified version of the original Espresso code in C accessible from a thing .NET API wrapper.</Description>
+    <Copyright>Jerome Haltom, Robert Brayton</Copyright>
+    <Company>Jerome Haltom, Robert Brayton</Company>
   </PropertyGroup>
 
   <ItemGroup>
@@ -9,22 +15,17 @@
       <Name>EspressoLib32</Name>
       <Platform>Win32</Platform>
       <Configuration>$(Configuration)</Configuration>
-      <OutputDir>native\win-x86</OutputDir>
+      <OutputDir>runtimes\win-x86\native</OutputDir>
     </LibProjectReference>
     <LibProjectReference Include="../EspressoLib/EspressoLib.vcxproj">
       <Name>EspressoLib64</Name>
       <Platform>x64</Platform>
       <Configuration>$(Configuration)</Configuration>
-      <OutputDir>native\win-x64</OutputDir>
+      <OutputDir>runtimes\win-x64\native</OutputDir>
     </LibProjectReference>
   </ItemGroup>
 
-  <ItemGroup>
-    <PackageReference Include="System.Runtime.InteropServices" Version="4.3.0" />
-    <PackageReference Include="System.Runtime.InteropServices.RuntimeInformation" Version="4.3.0" />
-  </ItemGroup>
-
-  <Target Name="GetLibTargets" BeforeTargets="GetCopyToOutputDirectoryItems">
+  <Target Name="GetLibTargets" BeforeTargets="GetCopyToOutputDirectoryItems" Condition="'$(DesignTimeBuild)' != 'true'">
     <Message Text="GetLibTargets" Importance="high" />
     <MSBuild Projects="@(LibProjectReference)" Targets="GetTargetPath" Properties="Platform=%(LibProjectReference.Platform);Configuration=%(LibProjectReference.Configuration)">
       <Output TaskParameter="TargetOutputs" ItemName="LibTargets" />
@@ -42,12 +43,27 @@
     </ItemGroup>
   </Target>
 
-  <Target Name="BuildLib" BeforeTargets="Compile" DependsOnTargets="GetLibTargets" Inputs="@(LibProjectReference)" Outputs="%(Identity).tmp">
+  <Target Name="BuildLib" BeforeTargets="Compile" DependsOnTargets="GetLibTargets" Inputs="@(LibProjectReference)" Outputs="%(Identity).tmp" Condition="'$(DesignTimeBuild)' != 'true'">
     <Message Text="BuildLib: %(LibProjectReference.Name)" Importance="high" />
     <MSBuild Projects="@(LibProjectReference)" Targets="Build" Properties="Platform=%(LibProjectReference.Platform);Configuration=%(LibProjectReference.Configuration)">
       <Output TaskParameter="TargetOutputs" ItemName="LibOutputs" />
     </MSBuild>
     <Message Text="BuildLib: @(LibTargets)" Importance="high" />
+  </Target>
+
+  <Target Name="__GetPackageFiles" AfterTargets="_GetPackageFiles" DependsOnTargets="GetLibTargets">
+    <ItemGroup>
+      <_PackageFiles Include="@(LibTargets)">
+        <BuildAction>None</BuildAction>
+        <Pack>true</Pack>
+        <PackagePath>%(OutputDir)\%(Filename)%(Extension)</PackagePath>
+      </_PackageFiles>
+      <_PackageFiles Include="@(LibTargets->'%(Rootdir)%(Directory)%(Filename).pdb')">
+        <BuildAction>None</BuildAction>
+        <Pack>true</Pack>
+        <PackagePath>%(OutputDir)\%(Filename).pdb</PackagePath>
+      </_PackageFiles>
+    </ItemGroup>
   </Target>
 
 </Project>

@@ -1,5 +1,6 @@
-#include "mincov_int.h"
+// Filename: gimpel.c
 
+#include "mincov_int.h"
 
 /*
  *  check for:
@@ -17,9 +18,9 @@
 int
 gimpel_reduce(sm_matrix *A, solution_t *select, int *weight, int lb, int bound, int depth, stats_t *stats, solution_t **best)
 {
-    register sm_row *prow, *save_sec;
-    register sm_col *c1 = NULL, *c2 = NULL;
-    register sm_element *p, *p1;
+    sm_row *prow, *save_sec;
+    sm_col *c1, *c2;
+    sm_element *p, *p1;
     int c1_col_num, c2_col_num, primary_row_num, secondary_row_num;
     int reduce_it;
 
@@ -55,9 +56,9 @@ gimpel_reduce(sm_matrix *A, solution_t *select, int *weight, int lb, int bound, 
 
         for (p = c2->first_row; p != 0; p = p->next_row) {
             if (p->row_num != primary_row_num) {
-                /* merge rows S1 and T */
+                // merge rows S1 and T
                 for (p1 = save_sec->first_col; p1 != 0; p1 = p1->next_col) {
-                    (void)sm_insert(A, p->row_num, p1->col_num);
+                    sm_insert(A, p->row_num, p1->col_num);
                 }
             }
         }
@@ -69,13 +70,13 @@ gimpel_reduce(sm_matrix *A, solution_t *select, int *weight, int lb, int bound, 
 
         stats->gimpel_count++;
         stats->gimpel++;
-        *best = sm_mincov(A, select, weight, lb - 1, bound - 1, depth, stats);
+        *best = sm_mincov(A, select, weight, lb-1, bound-1, depth, stats);
         stats->gimpel--;
 
         if (*best != NIL(solution_t)) {
-            /* is secondary row covered ? */
+            // is secondary row covered ?
             if (sm_row_intersects(save_sec, (*best)->row)) {
-                /* yes, actually select c2 */
+                // yes, actually select c2
                 solution_add(*best, weight, c2_col_num);
             }
             else {
@@ -90,3 +91,4 @@ gimpel_reduce(sm_matrix *A, solution_t *select, int *weight, int lb, int bound, 
         return 0;
     }
 }
+

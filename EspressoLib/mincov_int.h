@@ -1,8 +1,7 @@
-#include "port.h"
+// Filename: mincov_int.h
+
 #include "utility.h"
 #include "sparse.h"
-#include "mincov.h"
-
 
 typedef struct stats_struct stats_t;
 struct stats_struct {
@@ -19,26 +18,23 @@ struct stats_struct {
     int lower_bound;
 };
 
-
-
 typedef struct solution_struct solution_t;
 struct solution_struct {
     sm_row *row;
     int cost;
 };
 
+solution_t *solution_alloc(void);
+void solution_free(solution_t *sol);
+solution_t *solution_dup(solution_t *sol);
+void solution_accept(solution_t *sol, sm_matrix *A, int *weight, int col);
+void solution_reject(solution_t *sol, sm_matrix *A, int *weight, int col);
+void solution_add(solution_t *sol, int *weight, int col);
+solution_t *solution_choose_best(solution_t *best1, solution_t *best2);
 
-extern solution_t *solution_alloc(void);
-extern void solution_free(solution_t *sol);
-extern solution_t *solution_dup(solution_t *sol);
-extern void solution_accept(solution_t *sol, sm_matrix *A, int *weight, int col);
-extern void solution_reject(solution_t *sol, sm_matrix *A, int *weight, int col);
-extern void solution_add(solution_t *sol, int *weight, int col);
-extern solution_t *solution_choose_best(solution_t *best1, solution_t *best2);
+solution_t *sm_maximal_independent_set(sm_matrix *A, int *weight);
+solution_t *sm_mincov(sm_matrix *A, solution_t *select, int *weight, int lb, int bound, int depth, stats_t *stats);
+int gimpel_reduce(sm_matrix *A, solution_t *select, int *weight, int lb, int bound, int depth, stats_t *stats, solution_t **best);
 
-extern solution_t *sm_maximal_independent_set(sm_matrix *A, int *weight);
-extern solution_t *sm_mincov(sm_matrix *A, solution_t *select, int *weight, int lb, int bound, int depth, stats_t *stats);
-extern int gimpel_reduce(sm_matrix *A, solution_t *select, int *weight, int lb, int bound, int depth, stats_t *stats, solution_t **best);
+#define WEIGHT(weight, col) (weight == NIL(int) ? 1 : weight[col])
 
-
-#define WEIGHT(weight, col)	(weight == NIL(int) ? 1 : weight[col])

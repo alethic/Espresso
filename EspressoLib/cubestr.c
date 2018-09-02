@@ -1,144 +1,125 @@
-/*
-    Module: cubestr.c -- routines for managing the global cube structure
-*/
+//
+// Module: cubestr.c -- routines for managing the global cube structure
+//
 
 #include "espresso.h"
 
-/*
-    cube_setup -- assume that the fields "num_vars", "num_binary_vars", and
-    part_size[num_binary_vars .. num_vars-1] are setup, and initialize the
-    rest of cube and cdata.
+//
+// cube_setup -- assume that the fields "num_vars", "num_binary_vars", and
+// part_size[num_binary_vars .. num_vars-1] are setup, and initialize the
+// rest of CUBE and CDATA.
+//
+// If a part_size is < 0, then the field size is abs(part_size) and the
+// field read from the input is symbolic.
+//
 
-    If a part_size is < 0, then the field size is abs(part_size) and the
-    field read from the input is symbolic.
-*/
-void cube_setup(void)
+void
+cube_setup(void)
 {
-    register int i, var;
-    register pcube p;
+    int i, var;
+    set *p;
 
-    if (cube.num_binary_vars < 0 || cube.num_vars < cube.num_binary_vars)
+    if (CUBE.num_binary_vars < 0 || CUBE.num_vars < CUBE.num_binary_vars)
         fatal("cube size is silly, error in .i/.o or .mv");
 
-    cube.num_mv_vars = cube.num_vars - cube.num_binary_vars;
-    cube.output = cube.num_mv_vars > 0 ? cube.num_vars - 1 : -1;
+    CUBE.num_mv_vars = CUBE.num_vars - CUBE.num_binary_vars;
+    CUBE.output = CUBE.num_mv_vars > 0 ? CUBE.num_vars - 1 : -1;
+    CUBE.size = 0;
+    CUBE.first_part = ALLOC(int, CUBE.num_vars);
+    CUBE.last_part = ALLOC(int, CUBE.num_vars);
+    CUBE.first_word = ALLOC(int, CUBE.num_vars);
+    CUBE.last_word = ALLOC(int, CUBE.num_vars);
 
-    cube.size = 0;
-    cube.first_part = ALLOC(int, cube.num_vars);
-    cube.last_part = ALLOC(int, cube.num_vars);
-    cube.first_word = ALLOC(int, cube.num_vars);
-    cube.last_word = ALLOC(int, cube.num_vars);
-    for (var = 0; var < cube.num_vars; var++) {
-        if (var < cube.num_binary_vars)
-            cube.part_size[var] = 2;
-        cube.first_part[var] = cube.size;
-        cube.first_word[var] = WHICH_WORD(cube.size);
-        cube.size += ABS(cube.part_size[var]);
-        cube.last_part[var] = cube.size - 1;
-        cube.last_word[var] = WHICH_WORD(cube.size - 1);
+    for (var = 0; var < CUBE.num_vars; var++) {
+        if (var < CUBE.num_binary_vars)
+            CUBE.part_size[var] = 2;
+        CUBE.first_part[var] = CUBE.size;
+        CUBE.first_word[var] = WHICH_WORD(CUBE.size);
+        CUBE.size += ABS(CUBE.part_size[var]);
+        CUBE.last_part[var] = CUBE.size - 1;
+        CUBE.last_word[var] = WHICH_WORD(CUBE.size - 1);
     }
 
-    cube.var_mask = ALLOC(pset, cube.num_vars);
-    cube.sparse = ALLOC(int, cube.num_vars);
-    cube.binary_mask = new_cube();
-    cube.mv_mask = new_cube();
-    for (var = 0; var < cube.num_vars; var++) {
-        p = cube.var_mask[var] = new_cube();
-        for (i = cube.first_part[var]; i <= cube.last_part[var]; i++)
+    CUBE.var_mask = ALLOC(set *, CUBE.num_vars);
+    CUBE.sparse = ALLOC(int, CUBE.num_vars);
+    CUBE.binary_mask = set_new(CUBE.size);
+    CUBE.mv_mask = set_new(CUBE.size);
+
+    for (var = 0; var < CUBE.num_vars; var++) {
+        p = CUBE.var_mask[var] = set_new(CUBE.size);
+        for (i = CUBE.first_part[var]; i <= CUBE.last_part[var]; i++)
             set_insert(p, i);
-        if (var < cube.num_binary_vars) {
-            INLINEset_or(cube.binary_mask, cube.binary_mask, p);
-            cube.sparse[var] = 0;
+        if (var < CUBE.num_binary_vars) {
+            set_or(CUBE.binary_mask, CUBE.binary_mask, p);
+            CUBE.sparse[var] = 0;
         }
         else {
-            INLINEset_or(cube.mv_mask, cube.mv_mask, p);
-            cube.sparse[var] = 1;
+            set_or(CUBE.mv_mask, CUBE.mv_mask, p);
+            CUBE.sparse[var] = 1;
         }
     }
-    if (cube.num_binary_vars == 0)
-        cube.inword = -1;
+    if (CUBE.num_binary_vars == 0)
+        CUBE.inword = -1;
     else {
-        cube.inword = cube.last_word[cube.num_binary_vars - 1];
-        cube.inmask = cube.binary_mask[cube.inword] & DISJOINT;
+        CUBE.inword = CUBE.last_word[CUBE.num_binary_vars - 1];
+        CUBE.inmask = CUBE.binary_mask[CUBE.inword] & DISJOINT;
     }
 
-    cube.temp = ALLOC(pset, CUBE_TEMP);
+    CUBE.temp = ALLOC(set *, CUBE_TEMP);
     for (i = 0; i < CUBE_TEMP; i++)
-        cube.temp[i] = new_cube();
-    cube.fullset = set_fill(new_cube(), cube.size);
-    cube.emptyset = new_cube();
+        CUBE.temp[i] = set_new(CUBE.size);
 
-    cdata.part_zeros = ALLOC(int, cube.size);
-    cdata.var_zeros = ALLOC(int, cube.num_vars);
-    cdata.parts_active = ALLOC(int, cube.num_vars);
-    cdata.is_unate = ALLOC(int, cube.num_vars);
+    CUBE.fullset = set_fill(set_new(CUBE.size), CUBE.size);
+    CUBE.emptyset = set_new(CUBE.size);
+
+    CDATA.part_zeros = ALLOC(int, CUBE.size);
+    CDATA.var_zeros = ALLOC(int, CUBE.num_vars);
+    CDATA.parts_active = ALLOC(int, CUBE.num_vars);
+    CDATA.is_unate = ALLOC(int, CUBE.num_vars);
 }
 
-/*
-    setdown_cube -- free memory allocated for the cube/cdata structs
-    (free's all but the part_size array)
+//
+// cube_setdown -- free memory allocated for the CUBE/CDATA structs
+// (free's all but the part_size array)
+//
 
-    (I wanted to call this cube_setdown, but that violates the 8-character
-    external routine limit on the IBM !)
-*/
-void setdown_cube(void)
+void
+cube_setdown(void)
 {
-    register int i, var;
+    int i, var;
 
-    FREE(cube.first_part);
-    FREE(cube.last_part);
-    FREE(cube.first_word);
-    FREE(cube.last_word);
-    FREE(cube.sparse);
+    FREE(CUBE.first_part);
+    FREE(CUBE.last_part);
+    FREE(CUBE.first_word);
+    FREE(CUBE.last_word);
+    FREE(CUBE.sparse);
 
-    free_cube(cube.binary_mask);
-    free_cube(cube.mv_mask);
-    free_cube(cube.fullset);
-    free_cube(cube.emptyset);
-    for (var = 0; var < cube.num_vars; var++)
-        free_cube(cube.var_mask[var]);
-    FREE(cube.var_mask);
+    set_free(CUBE.binary_mask);
+    set_free(CUBE.mv_mask);
+    set_free(CUBE.fullset);
+    set_free(CUBE.emptyset);
 
-    for (i = 0; i < CUBE_TEMP; i++)
-        free_cube(cube.temp[i]);
-    FREE(cube.temp);
+    for (var = 0; var < CUBE.num_vars; var++)
+        set_free(CUBE.var_mask[var]);
+    FREE(CUBE.var_mask);
 
-    FREE(cdata.part_zeros);
-    FREE(cdata.var_zeros);
-    FREE(cdata.parts_active);
-    FREE(cdata.is_unate);
+    for(i = 0; i < CUBE_TEMP; i++)
+        set_free(CUBE.temp[i]);
+    FREE(CUBE.temp);
 
-    cube.first_part = cube.last_part = (int *)NULL;
-    cube.first_word = cube.last_word = (int *)NULL;
-    cube.sparse = (int *)NULL;
-    cube.binary_mask = cube.mv_mask = (pcube)NULL;
-    cube.fullset = cube.emptyset = (pcube)NULL;
-    cube.var_mask = cube.temp = (pcube *)NULL;
+    FREE(CDATA.part_zeros);
+    FREE(CDATA.var_zeros);
+    FREE(CDATA.parts_active);
+    FREE(CDATA.is_unate);
 
-    cdata.part_zeros = cdata.var_zeros = cdata.parts_active = (int *)NULL;
-    cdata.is_unate = (bool *)NULL;
+    CUBE.first_part = CUBE.last_part = (int *) NULL;
+    CUBE.first_word = CUBE.last_word = (int *) NULL;
+    CUBE.sparse = (int *) NULL;
+    CUBE.binary_mask = CUBE.mv_mask = (set *) NULL;
+    CUBE.fullset = CUBE.emptyset = (set *) NULL;
+    CUBE.var_mask = CUBE.temp = (set **) NULL;
+
+    CDATA.part_zeros = CDATA.var_zeros = CDATA.parts_active = (int *) NULL;
+    CDATA.is_unate = (bool *) NULL;
 }
 
-
-void save_cube_struct(void)
-{
-    temp_cube_save = cube;              /* structure copy ! */
-    temp_cdata_save = cdata;            /*      ""          */
-
-    cube.first_part = cube.last_part = (int *)NULL;
-    cube.first_word = cube.last_word = (int *)NULL;
-    cube.part_size = (int *)NULL;
-    cube.binary_mask = cube.mv_mask = (pcube)NULL;
-    cube.fullset = cube.emptyset = (pcube)NULL;
-    cube.var_mask = cube.temp = (pcube *)NULL;
-
-    cdata.part_zeros = cdata.var_zeros = cdata.parts_active = (int *)NULL;
-    cdata.is_unate = (bool *)NULL;
-}
-
-
-void restore_cube_struct(void)
-{
-    cube = temp_cube_save;              /* structure copy ! */
-    cdata = temp_cdata_save;            /*      ""          */
-}

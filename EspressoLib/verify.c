@@ -1,59 +1,63 @@
-/*
- */
+// Filename: verify.c
+
+#include <string.h>
 
 #include "espresso.h"
 
- /*
-  *  verify -- check that all minterms of F are contained in (Fold u Dold)
-  *  and that all minterms of Fold are contained in (F u Dold).
-  */
-bool verify(pcover F, pcover Fold, pcover Dold)
+//
+// verify -- check that all minterms of F are contained in (Fold u Dold)
+// and that all minterms of Fold are contained in (F u Dold).
+//
+bool
+verify(set_family_t *F, set_family_t *Fold, set_family_t *Dold)
 {
-    pcube p, last, *FD;
+    set *p, *last, **FD;
     bool verify_error = FALSE;
 
-    /* Make sure the function didn't grow too large */
+    // Make sure the function didn't grow too large
     FD = cube2list(Fold, Dold);
     foreach_set(F, last, p)
-        if (!cube_is_covered(FD, p)) {
+        if (! cube_is_covered(FD, p)) {
             printf("some minterm in F is not covered by Fold u Dold\n");
             verify_error = TRUE;
-            if (verbose_debug) printf("%s\n", pc1(p)); else break;
+            if (verbose_debug)
+                printf("%s\n", pc1(p));
+            else
+                break;
         }
     free_cubelist(FD);
 
-    /* Make sure minimized function covers the original function */
+    // Make sure minimized function covers the original function
     FD = cube2list(F, Dold);
     foreach_set(Fold, last, p)
-        if (!cube_is_covered(FD, p)) {
+        if (! cube_is_covered(FD, p)) {
             printf("some minterm in Fold is not covered by F u Dold\n");
             verify_error = TRUE;
-            if (verbose_debug) printf("%s\n", pc1(p)); else break;
+            if (verbose_debug)
+                printf("%s\n", pc1(p));
+            else
+                break;
         }
     free_cubelist(FD);
 
     return verify_error;
 }
 
-
-
-/*
- *  PLA_verify -- verify that two PLA's are identical
- *
- *  If names are given, row and column permutations are done to make
- *  the comparison meaningful.
- *
- */
-bool PLA_verify(pPLA PLA1, pPLA PLA2)
+//
+// PLA_verify -- verify that two PLA's are identical
+//
+// If names are given, row and column permutations are done to make
+// the comparison meaningful.
+//
+bool
+PLA_verify(PLA_t *PLA1, PLA_t *PLA2)
 {
-    /* Check if both have names given; if so, attempt to permute to
-     * match the names
-     */
+    // Check if both have names given; if so, attempt to permute to
+    // match the names
     if (PLA1->label != NULL && PLA1->label[0] != NULL &&
         PLA2->label != NULL && PLA2->label[0] != NULL) {
         PLA_permute(PLA1, PLA2);
-    }
-    else {
+    } else {
         fprintf(stderr, "Warning: cannot permute columns without names\n");
         return TRUE;
     }
@@ -66,22 +70,20 @@ bool PLA_verify(pPLA PLA1, pPLA PLA2)
     return verify(PLA2->F, PLA1->F, PLA1->D);
 }
 
-
-
-/*
- *  Permute the columns of PLA1 so that they match the order of PLA2
- *  Discard any columns of PLA1 which are not in PLA2
- *  Association is strictly by the names of the columns of the cover.
- */
-void PLA_permute(pPLA PLA1, pPLA PLA2)
+///
+//  Permute the columns of PLA1 so that they match the order of PLA2
+//  Discard any columns of PLA1 which are not in PLA2
+//  Association is strictly by the names of the columns of the cover.
+//
+void
+PLA_permute(PLA_t *PLA1, PLA_t *PLA2)
 {
-    register int i, j, *permute, npermute;
-    register char *labi;
+    int i, j, *permute, npermute;
+    char *labi;
     char **label;
 
-    /* determine which columns of PLA1 to save, and place these in the list
-     * "permute"; the order in this list is the final output order
-     */
+    // determine which columns of PLA1 to save, and place these in the list
+    // "permute"; the order in this list is the final output order
     npermute = 0;
     permute = ALLOC(int, PLA2->F->sf_size);
     for (i = 0; i < PLA2->F->sf_size; i++) {
@@ -94,41 +96,35 @@ void PLA_permute(pPLA PLA1, pPLA PLA2)
         }
     }
 
-    /* permute columns */
-    if (PLA1->F != NULL) {
+    // permute columns
+    if (PLA1->F != NULL)
         PLA1->F = sf_permute(PLA1->F, permute, npermute);
-    }
-    if (PLA1->R != NULL) {
+    if (PLA1->R != NULL)
         PLA1->R = sf_permute(PLA1->R, permute, npermute);
-    }
-    if (PLA1->D != NULL) {
+    if (PLA1->D != NULL)
         PLA1->D = sf_permute(PLA1->D, permute, npermute);
-    }
 
-    /* permute the labels */
-    label = ALLOC(char *, cube.size);
-    for (i = 0; i < npermute; i++) {
+    // permute the labels
+    label = ALLOC(char *, CUBE.size);
+    for (i = 0; i < npermute; i++)
         label[i] = PLA1->label[permute[i]];
-    }
-    for (i = npermute; i < cube.size; i++) {
+    for (i = npermute; i < CUBE.size; i++)
         label[i] = NULL;
-    }
+
     FREE(PLA1->label);
     PLA1->label = label;
-
     FREE(permute);
 }
 
-
-
-/*
- *  check_consistency -- test that the ON-set, OFF-set and DC-set form
- *  a partition of the boolean space.
- */
-bool check_consistency(pPLA PLA)
+//
+// check_consistency -- test that the ON-set, OFF-set and DC-set form
+// a partition of the boolean space.
+//
+bool
+check_consistency(PLA_t *PLA)
 {
     bool verify_error = FALSE;
-    pcover T;
+    set_family_t *T;
 
     T = cv_intersect(PLA->F, PLA->D);
     if (T->count == 0)
@@ -139,8 +135,8 @@ bool check_consistency(pPLA PLA)
             cprint(T);
         verify_error = TRUE;
     }
-    (void)fflush(stdout);
-    free_cover(T);
+    fflush(stdout);
+    sf_free(T);
 
     T = cv_intersect(PLA->F, PLA->R);
     if (T->count == 0)
@@ -151,8 +147,8 @@ bool check_consistency(pPLA PLA)
             cprint(T);
         verify_error = TRUE;
     }
-    (void)fflush(stdout);
-    free_cover(T);
+    fflush(stdout);
+    sf_free(T);
 
     T = cv_intersect(PLA->D, PLA->R);
     if (T->count == 0)
@@ -163,8 +159,8 @@ bool check_consistency(pPLA PLA)
             cprint(T);
         verify_error = TRUE;
     }
-    (void)fflush(stdout);
-    free_cover(T);
+    fflush(stdout);
+    sf_free(T);
 
     if (tautology(cube3list(PLA->F, PLA->D, PLA->R)))
         printf("Union of ON-SET, OFF-SET and DC-SET is the universe\n");
@@ -174,8 +170,9 @@ bool check_consistency(pPLA PLA)
         if (verbose_debug)
             cprint(T);
         verify_error = TRUE;
-        free_cover(T);
+        sf_free(T);
     }
-    (void)fflush(stdout);
+    fflush(stdout);
     return verify_error;
 }
+
