@@ -1,0 +1,14 @@
+﻿<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+  <ItemGroup>
+    <ContentWithTargetPath Include="$(MSBuildThisFileDirectory)..\..\runtimes\win7-x64\native\EspressoLib.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>x64\EspressoLib.dll</TargetPath>
+    </ContentWithTargetPath>
+    <ContentWithTargetPath Include="$(MSBuildThisFileDirectory)..\..\runtimes\win7-x86\native\EspressoLib.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>x86\EspressoLib.dll</TargetPath>
+    </ContentWithTargetPath>
+  </ItemGroup>
+
+</Project>

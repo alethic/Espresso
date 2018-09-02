@@ -11,17 +11,25 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Include="build\net4\Espresso.targets">
+      <OutputDir>build\net4</OutputDir>
+      <Pack>true</Pack>
+      <PackagePath>build\net4</PackagePath>
+    </None>
+  </ItemGroup>
+
+  <ItemGroup>
     <LibProjectReference Include="../EspressoLib/EspressoLib.vcxproj">
       <Name>EspressoLib32</Name>
       <Platform>Win32</Platform>
       <Configuration>$(Configuration)</Configuration>
-      <OutputDir>runtimes\win-x86\native</OutputDir>
+      <OutputDir>runtimes\win7-x86\native</OutputDir>
     </LibProjectReference>
     <LibProjectReference Include="../EspressoLib/EspressoLib.vcxproj">
       <Name>EspressoLib64</Name>
       <Platform>x64</Platform>
       <Configuration>$(Configuration)</Configuration>
-      <OutputDir>runtimes\win-x64\native</OutputDir>
+      <OutputDir>runtimes\win7-x64\native</OutputDir>
     </LibProjectReference>
   </ItemGroup>
 

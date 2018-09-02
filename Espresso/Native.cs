@@ -62,10 +62,14 @@ namespace Espresso
             switch (Marshal.SizeOf<IntPtr>())
             {
                 case 4:
-                    yield return Path.Combine(self, @"native\win-x86\EspressoLib.dll");
+                    yield return Path.Combine(self, @"runtimes\win7-x86\native\EspressoLib.dll");
+                    yield return Path.Combine(self, @"runtimes\win-x86\native\EspressoLib.dll");
+                    yield return Path.Combine(self, @"x86\EspressoLib.dll");
                     break;
                 case 8:
-                    yield return Path.Combine(self, @"native\win-x64\EspressoLib.dll");
+                    yield return Path.Combine(self, @"runtimes\win7-x64\native\EspressoLib.dll");
+                    yield return Path.Combine(self, @"runtimes\win-x64\native\EspressoLib.dll");
+                    yield return Path.Combine(self, @"x64\EspressoLib.dll");
                     break;
                 default:
                     throw new NotSupportedException("Unknown OS architecture.");

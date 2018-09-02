@@ -11,10 +11,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Libuv" Version="1.10.0" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\Espresso\Espresso.csproj">
       <Private>true</Private>
     </ProjectReference>
