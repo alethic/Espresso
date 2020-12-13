@@ -10,7 +10,7 @@
         <PackageIcon>icon.png</PackageIcon>
         <LangVersion>8.0</LangVersion>
     </PropertyGroup>
-    <ItemGroup>
+    <ItemGroup Condition=" '$(MSBuildProjectExtension)' == '.csproj' ">
         <None Include="$(MSBuildThisFileDirectory)icon.png" Pack="true" PackagePath="" />
     </ItemGroup>
 </Project>
