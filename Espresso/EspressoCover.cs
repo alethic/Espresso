@@ -42,7 +42,7 @@ namespace Espresso
             public int Count => count;
 
             /// <summary>
-            /// Gets or sets the value of the datafor the specified cube and position.
+            /// Gets or sets the value of the data for the specified cube and position.
             /// </summary>
             /// <param name="cube"></param>
             /// <param name="position"></param>
