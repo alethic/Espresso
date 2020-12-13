@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.28010.2003
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30804.86
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "EspressoLib", "EspressoLib\EspressoLib.vcxproj", "{EFE14E12-FCFE-4B59-846B-943F5432C511}"
 EndProject
@@ -12,9 +12,10 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{E7FF37C2-D1A2-49CC-8256-79C311EFD3EE}"
 	ProjectSection(SolutionItems) = preProject
 		appveyor.yml = appveyor.yml
+		Directory.Build.props = Directory.Build.props
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Espresso.Tests", "Espresso.Tests\Espresso.Tests.csproj", "{17A42E85-D0EB-4898-B7D3-3525DC7DE1F8}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Espresso.Tests", "Espresso.Tests\Espresso.Tests.csproj", "{17A42E85-D0EB-4898-B7D3-3525DC7DE1F8}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

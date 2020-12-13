@@ -4,10 +4,7 @@
     <TargetFramework>netstandard2.0</TargetFramework>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Authors>Jerome Haltom, Robert Brayton</Authors>
     <Description>The Espresso logic minimizer is a computer program using heuristic and specific algorithms for efficiently reducing the complexity of digital electronic gate circuits. Espresso was developed at IBM by Robert Brayton. This package contains a modified version of the original Espresso code in C accessible from a thing .NET API wrapper.</Description>
-    <Copyright>Jerome Haltom, Robert Brayton</Copyright>
-    <Company>Jerome Haltom, Robert Brayton</Company>
   </PropertyGroup>
 
   <ItemGroup>

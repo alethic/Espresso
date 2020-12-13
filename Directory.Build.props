@@ -1,0 +1,16 @@
+<Project>
+    <PropertyGroup>
+        <Authors>Jerome Haltom, Robert Brayton</Authors>
+        <Copyright>Jerome Haltom, Robert Brayton</Copyright>
+        <Company>Jerome Haltom, Robert Brayton</Company>
+        <RepositoryUrl>https://github.com/alethic/Espresso</RepositoryUrl>
+        <RepositoryType>git</RepositoryType>
+        <PackageProjectUrl>https://github.com/alethic/Espresso</PackageProjectUrl>
+        <PackageLicenseExpression>MIT</PackageLicenseExpression>
+        <PackageIcon>icon.png</PackageIcon>
+        <LangVersion>8.0</LangVersion>
+    </PropertyGroup>
+    <ItemGroup>
+        <None Include="$(MSBuildThisFileDirectory)icon.png" Pack="true" PackagePath="" />
+    </ItemGroup>
+</Project>
